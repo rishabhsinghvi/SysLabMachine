@@ -16,10 +16,9 @@ void ID(void);
 void EX(void);
 void MEM(void);
 void WB(void);
-
-
-
-
+char *progScannner(void);
+char *regNumberConverter(void);
+struct inst parser(void);
 
 
 int main (int argc, char *argv[]){
