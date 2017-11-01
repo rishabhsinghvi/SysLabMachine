@@ -13,7 +13,11 @@
 #define BATCH 0
 #define REG_NUM 32
 
-
+void IF(void);
+void ID(void);
+void EX(void);
+void MEM(void);
+void WB(void);
 
 
 
