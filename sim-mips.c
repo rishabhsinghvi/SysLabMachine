@@ -1,6 +1,4 @@
-// Author: Shikang Xu; ECE 353 TA
-
-// List the full names of ALL group members at the top of your code.
+// Author: Aleksa Deric, Noah Sheridan, Peter Stanwicks
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
