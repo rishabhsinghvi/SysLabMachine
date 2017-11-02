@@ -11,14 +11,15 @@
 #define BATCH 0
 #define REG_NUM 32
 
-void IF(void);
-void ID(void);
-void EX(void);
-void MEM(void);
-void WB(void);
-char *progScannner(void);
-char *regNumberConverter(void);
-struct inst parser(void);
+void IF(void);  				//author: Noah,		tester: Aleksa
+void ID(void);					//author: Aleksa,	tester: Noah
+void EX(void);					//author: Noah,		tester:Aleksa, Peter
+void MEM(void);					//author: Peter,	tester: Aleksa
+void WB(void);					//author: Aleksa,	tester: Noah
+char *progScannner(void); 		//author: Peter,	tester: Noah
+char *regNumberConverter(void); //author: Aleksa,	tester:	Peter
+struct inst parser(void);		//author: Noah,		tester: Peter
+//main  						//author: Peter,
 
 
 int main (int argc, char *argv[]){
