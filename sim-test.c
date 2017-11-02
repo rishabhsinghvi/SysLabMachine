@@ -9,12 +9,12 @@ char *progScannner(void); 		//author: Peter,	tester: Noah
 char *regNumberConverter(void); //author: Aleksa,	tester:	Peter
 struct inst parser(void);		//author: Noah,		tester: Peter
 
+/*
+	To run this testing file either run the testSim.sh script 
+	or compile the project using the makefile by running the 
+	$make command which will create a sim-test executable 
 
-
-
-
-
-
+*/
 
 int ExampleTest(){
 	return 0 == 0;

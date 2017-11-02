@@ -85,7 +85,7 @@ int main (int argc, char *argv[]){
 
 char *progScannner(void){
 
-	return 0;
+	return "peter";
 }
 
 char *regNumberConverter(void){
@@ -96,7 +96,7 @@ char *regNumberConverter(void){
 struct inst parser(void){
 
 
-	return void;
+	return 1;
 }
 
 void IF(void){
