@@ -107,11 +107,13 @@ char *regNumberConverter(void){
 	return 0;
 }
 
+
 struct inst parser(void){
 
 
 	return 1;
 }
+
 
 void IF(void){
 
