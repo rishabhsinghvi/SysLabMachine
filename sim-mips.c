@@ -17,6 +17,14 @@
 #define MEMORY_UNFINISHED 0
 #define WRITEBACK_REG_NEW 0  //new contents in the writeback buffer register for writeback stage to consume
 
+struct instruction
+{
+	char* opcode;
+	int reg1;
+	int reg2_saveReg;
+	int saveReg_iField;
+};
+
 void IF(void);  				//author: Noah,		tester: Aleksa
 void ID(void);					//author: Aleksa,	tester: Noah
 void EX(void);					//author: Noah,		tester:Aleksa, Peter
