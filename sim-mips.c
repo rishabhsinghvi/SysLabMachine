@@ -5,8 +5,6 @@
 #include <math.h>
 #include <assert.h>
 
-
-
 #define SINGLE 1
 #define BATCH 0
 #define REG_NUM 32
@@ -17,17 +15,22 @@
 #define MEMORY_UNFINISHED 0
 #define WRITEBACK_REG_NEW 0  //new contents in the writeback buffer register for writeback stage to consume
 
-struct instruction
+struct inst
 {
-	char* opcode;
-	int reg1;
-	int reg2_saveReg;
-	int saveReg_iField;
+	int opcode;
+	int rs;
+	int rt;
+	int rd;
+	int Imm;
 };
+
+enum opcode {add, addi, sub, mult, beq, lw, sw};
+
+char* correctOpcode[7];
 
 void IF(void);  				//author: Noah,		tester: Aleksa
 void ID(void);					//author: Aleksa,	tester: Noah
-void EX(void);					//author: Noah,		tester:Aleksa, Peter
+void EX(void);					//author: Noah,		tester: Aleksa, Peter
 void MEM(void);					//author: Peter,	tester: Aleksa
 void WB(void);					//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 		//author: Peter,	tester: Noah
@@ -45,6 +48,14 @@ int main (int argc, char *argv[]){
 	long sim_cycle=0;//simulation cycle counter
 	//define your own counter for the usage of each pipeline stage here
 	
+	correctOpcode[0] = 'add';
+	correctOpcode[1] = 'addi';
+	correctOpcode[2] = 'sub';
+	correctOpcode[3] = 'mult';
+	correctOpcode[4] = 'beq';
+	correctOpcode[5] = 'lw';
+	correctOpcode[6] = 'sw':
+
 	int test_counter=0;
 	FILE *input=NULL;
 	FILE *output=NULL;
@@ -111,8 +122,8 @@ char *regNumberConverter(void){
 
 struct inst parser(void){
 
-
-	return 1;
+	struct inst dummyReturn;
+	return dummyReturn;
 }
 
 
