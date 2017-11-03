@@ -54,7 +54,7 @@ int main (int argc, char *argv[]){
 	correctOpcode[3] = 'mult';
 	correctOpcode[4] = 'beq';
 	correctOpcode[5] = 'lw';
-	correctOpcode[6] = 'sw':
+	correctOpcode[6] = 'sw';
 
 	int test_counter=0;
 	FILE *input=NULL;
@@ -110,6 +110,18 @@ int main (int argc, char *argv[]){
 
 //
 char *progScannner(char *c){
+	char f;
+	f = 0;
+
+	char* ret;
+
+	for(int i = 0; i < strlen(c); i++){
+		if( (65 <= c[i] && c[i] <= 90) || (97 <= c[i] && c[i] <= 122) || (48 <= c[i] && c[i] <= 57))
+			strcat(ret, c[i])
+	}
+
+
+
 
 	return "peter";
 }
