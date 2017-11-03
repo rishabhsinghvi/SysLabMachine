@@ -126,11 +126,25 @@ struct inst parser(char *input){
 			return;
 		}
 	}
-	output.opcode = opcode;
 	
+	enum opcode inst = opcode;
+	output.opcode = inst;
+	if(inst == 0 || inst == 2 || inst == 3){
+		output.rs = strtok(NULL, delimeter);
+		output.rt = strtok(NULL, delimeter);
+		output.rd = strtok(NULL, delimeter);
+	}
+	else{
+		output.rs = strtok(NULL, delimeter);
+		output.rt = strtok(NULL, delimeter);
+		output.Imm = strtok(NULL, delimeter);
+		if(output.Imm>=65536){
+			printf("Ooop! Something was entered-in incorrectly!");
+			exit;
+		}
+	}
 
-	struct inst dummyReturn;
-	return dummyReturn;
+	return output;
 }
 
 
