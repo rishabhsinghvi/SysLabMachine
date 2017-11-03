@@ -6,15 +6,14 @@ void ID(void);					//author: Aleksa,	tester: Noah
 void EX(void);					//author: Noah,		tester:Aleksa, Peter
 void MEM(void);					//author: Peter,	tester: Aleksa
 void WB(void);					//author: Aleksa,	tester: Noah
-char *progScannner(void); 		//author: Peter,	tester: Noah
+char *progScannner(char *c); 		//author: Peter,	tester: Noah
 char *regNumberConverter(void); //author: Aleksa,	tester:	Peter
 struct inst parser(void);		//author: Noah,		tester: Peter
 
 /*
-	To run this testing file either run the testSim.sh script (linux or mac)
-	or compile the project using the makefile by running the 
-	$make command which will create a sim-test and sim-mips executable 
-	(hopefully works for windows, mac and linux)
+	To run this testing file compile the project using the makefile 
+	by running the $make command which will create a sim-test and 
+	sim-mips executable (hopefully works for windows, mac and linux)
 */
 
 int ExampleTest(){
@@ -41,12 +40,24 @@ int WB_Test(){
 	return 0;
 }
 
-int progScanner_Test(){
-	char* str1, str2;
-	str1 = progScannner("add	$s0,,$s1         ,     $s2");
-	str2 = "add $s0 $s1 $s2";
+int progScanner_Test1(){
 
-	return strcmp(str1,str2);
+	return strcmp(progScannner("add	$s0,,$s1         ,     $s2"), "add $s0 $s1 $s2");
+}
+
+int progScanner_Test2(){
+
+	return strcmp(progScannner("lw $s0, 8($t0)"), "lw $s0 8 $t0");
+}
+
+int progScanner_Test3(){
+
+	return strcmp(progScannner("lw 			$s0   4($t0)"), "lw $s0 4 $t0");
+}
+
+int progScanner_Test4(){
+
+	return strcmp(progScannner("add     $s0,      $s1,,,,,,$2"), "add $s0 $s1 $s2");
 }
 
 int regNumberConverter_Test(){
@@ -65,7 +76,10 @@ int main(int argc, char const *argv[])
 	printf("EX Test: %d\n", EX_Test());
 	printf("MEM Test: %d\n", MEM_Test());
 	printf("WB Test: %d\n", WB_Test());
-	printf("Program Scanner Test: %d\n", progScanner_Test());
+	printf("Program Scanner Test 1: %d\n", progScanner_Test1());
+	printf("Program Scanner Test 2: %d\n", progScanner_Test2());
+	printf("Program Scanner Test 3: %d\n", progScanner_Test3());
+	printf("Program Scanner Test 4: %d\n", progScanner_Test4());			
 	printf("regNumberConverter Test: %d\n", regNumberConverter_Test());
 	printf("parser Test: %d\n", parser_Test());
 
