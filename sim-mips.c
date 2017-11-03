@@ -26,7 +26,7 @@ struct inst
 
 enum opcode {add, addi, sub, mult, beq, lw, sw};
 
-char* correctOpcode[7];
+char* correctOpcode[] = {'add', 'addi', 'sub', 'mult', 'beq', 'lw', 'sw'};
 
 void IF(void);  				//author: Noah,		tester: Aleksa
 void ID(void);					//author: Aleksa,	tester: Noah
@@ -47,14 +47,7 @@ int main (int argc, char *argv[]){
 	long pgm_c=0;//program counter
 	long sim_cycle=0;//simulation cycle counter
 	//define your own counter for the usage of each pipeline stage here
-	
-	correctOpcode[0] = 'add';
-	correctOpcode[1] = 'addi';
-	correctOpcode[2] = 'sub';
-	correctOpcode[3] = 'mult';
-	correctOpcode[4] = 'beq';
-	correctOpcode[5] = 'lw';
-	correctOpcode[6] = 'sw':
+
 
 	int test_counter=0;
 	FILE *input=NULL;
@@ -119,7 +112,22 @@ char *regNumberConverter(void){
 }
 
 
-struct inst parser(void){
+struct inst parser(char *input){
+
+	struct inst output;
+	char delimeter[] = " ";
+	char opcode[] = strtok(input, delimeter);
+	for(int i=0; i<8; i++){
+		if(i==7){
+			printf("Ooop! Something was entered-in incorrectly!");
+			exit;
+		}
+		if opcode = correctOpcode[i]{
+			return;
+		}
+	}
+	output.opcode = opcode;
+	
 
 	struct inst dummyReturn;
 	return dummyReturn;
