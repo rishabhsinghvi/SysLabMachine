@@ -10,6 +10,12 @@
 #define SINGLE 1
 #define BATCH 0
 #define REG_NUM 32
+#define PC 0
+#define BRANCH_PENDING 0
+#define DECODE_UNFINISHED 0
+#define EXECUTE_UNFINISHED 0
+#define MEMORY_UNFINISHED 0
+#define WRITEBACK_REG_NEW 0  //new contents in the writeback buffer register for writeback stage to consume
 
 void IF(void);  				//author: Noah,		tester: Aleksa
 void ID(void);					//author: Aleksa,	tester: Noah
@@ -77,7 +83,7 @@ int main (int argc, char *argv[]){
 	if(sim_mode==1){
 		for (i=0;i<REG_NUM;i++){
 			mips_reg[i]=0;
-		}
+		} 
 	}
 	
 	//start your code from here
