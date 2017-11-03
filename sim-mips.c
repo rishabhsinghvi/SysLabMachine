@@ -24,9 +24,19 @@ struct inst
 	int Imm;
 };
 
-enum opcode {add, addi, sub, mult, beq, lw, sw};
+struct buffer
+{
+	struct inst instruction;
+	int readyToRead;
+	int readytoWrite;
+	int address;
+	int wbReg;
+	int data;
+};
 
-char* correctOpcode[] = {'add', 'addi', 'sub', 'mult', 'beq', 'lw', 'sw'};
+enum opcode {add, addi, sub, mult, beq, lw, sw, halt function};
+
+char** correctOpcode = {'add', 'addi', 'sub', 'mult', 'beq', 'lw', 'sw', 'halt function'};
 
 void IF(void);  							//author: Noah,		tester: Aleksa
 void ID(void);								//author: Aleksa,	tester: Noah
@@ -168,8 +178,8 @@ struct inst parser(char *input){
 	struct inst output;
 	char delimeter[] = " ";
 	char opcode[] = strtok(input, delimeter);
-	for(int i=0; i<8; i++){
-		if(i==7){
+	for(int i=0; i<9; i++){
+		if(i==8){
 			printf("Ooop! Something was entered-in incorrectly!");
 			exit;
 		}
@@ -180,10 +190,13 @@ struct inst parser(char *input){
 	
 	enum opcode inst = opcode;
 	output.opcode = inst;
+	if(inst == 8){  //halt program command detected
+		return ouput;
+	}
 	if(inst == 0 || inst == 2 || inst == 3){
-		output.rs = strtok(NULL, delimeter);
-		output.rt = strtok(NULL, delimeter);
-		output.rd = strtok(NULL, delimeter);
+		output.rs = strtok(NULL, delimeter);  //saving rs value
+		output.rt = strtok(NULL, delimeter);  //saving rt value
+		output.rd = strtok(NULL, delimeter);  //saving rd value
 	}
 	else{
 		output.rs = strtok(NULL, delimeter);
@@ -194,6 +207,8 @@ struct inst parser(char *input){
 			exit;
 		}
 	}
+	free(inst);
+	free(delimeter);
 
 	return output;
 }
