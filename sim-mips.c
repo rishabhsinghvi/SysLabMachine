@@ -38,15 +38,15 @@ enum opcode {add, addi, sub, mult, beq, lw, sw, halt function};
 
 char** correctOpcode = {'add', 'addi', 'sub', 'mult', 'beq', 'lw', 'sw', 'halt function'};
 
-void IF(void);  				//author: Noah,		tester: Aleksa
-void ID(void);					//author: Aleksa,	tester: Noah
-void EX(void);					//author: Noah,		tester: Aleksa, Peter
-void MEM(void);					//author: Peter,	tester: Aleksa
-void WB(void);					//author: Aleksa,	tester: Noah
-char *progScannner(char *c); 		//author: Peter,	tester: Noah
-char *regNumberConverter(void); //author: Aleksa,	tester:	Peter
-struct inst parser(void);		//author: Noah,		tester: Peter
-//main  						//author: Peter,
+void IF(void);  							//author: Noah,		tester: Aleksa
+void ID(void);								//author: Aleksa,	tester: Noah
+void EX(void);								//author: Noah,		tester: Aleksa, Peter
+void MEM(void);								//author: Peter,	tester: Aleksa
+void WB(void);								//author: Aleksa,	tester: Noah
+char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
+char *regNumberConverter(void); 			//author: Aleksa,	tester:	Peter
+struct inst parser(char *input);			//author: Noah,		tester: Peter
+//main  									//author: Peter
 
 
 int main (int argc, char *argv[]){
@@ -113,20 +113,56 @@ int main (int argc, char *argv[]){
 
 //
 char *progScannner(char *c){
-	char f;
-	f = 0;
 
-	char* ret;
+	char *ret; ret = (char *)malloc(strlen(c));
+	char t[2];
+	char space,open;
 
+	
 	for(int i = 0; i < strlen(c); i++){
-		if( (65 <= c[i] && c[i] <= 90) || (97 <= c[i] && c[i] <= 122) || (48 <= c[i] && c[i] <= 57))
-			strcat(ret, c[i])
+
+
+		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9')){
+			t[0] = c[i];
+			t[1] = '\0';
+			strcat(ret, t);
+
+			space = 0;
+		}else{
+			if(space == 0){
+				t[0] = ' ';
+				t[1] = '\0';
+				strcat(ret, t);
+			}
+
+			space = 1;
+		}
+
+
+		if(c[i] == '('){
+			if(open == 1){
+				printf("%s\n", "Mismatched paranthesis");
+				exit(0);
+			}
+			open = 1;
+		}else if(c[i] == ')'){
+			if(open == 0){
+				printf("%s\n", "Mismatched paranthesis");
+				exit(0);
+			}
+			open = 0;
+		}
+
+
 	}
+	if(open == 1){
+		printf("%s\n", "Mismatched paranthesis");
+		exit(0);
+	}
+	
 
-
-
-
-	return "peter";
+	return ret;
+	free(ret);
 }
 
 char *regNumberConverter(void){
@@ -136,6 +172,8 @@ char *regNumberConverter(void){
 
 
 struct inst parser(char *input){
+
+	
 
 	struct inst output;
 	char delimeter[] = " ";
