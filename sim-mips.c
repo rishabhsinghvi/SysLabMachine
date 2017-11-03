@@ -109,7 +109,7 @@ char *progScannner(char *c){
 	char space,open;
 
 	
-	for(int i = 0; i < strlen(c); i++){
+	for (int i = 0; i < strlen(c); i++){
 
 
 		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9')){
