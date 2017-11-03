@@ -33,7 +33,7 @@ void ID(void);					//author: Aleksa,	tester: Noah
 void EX(void);					//author: Noah,		tester: Aleksa, Peter
 void MEM(void);					//author: Peter,	tester: Aleksa
 void WB(void);					//author: Aleksa,	tester: Noah
-char *progScannner(void); 		//author: Peter,	tester: Noah
+char *progScannner(char *c); 		//author: Peter,	tester: Noah
 char *regNumberConverter(void); //author: Aleksa,	tester:	Peter
 struct inst parser(void);		//author: Noah,		tester: Peter
 //main  						//author: Peter,
@@ -101,7 +101,20 @@ int main (int argc, char *argv[]){
 	//start your code from here
 }
 
-char *progScannner(void){
+//
+char *progScannner(char *c){
+	char f;
+	f = 0;
+
+	char* ret;
+
+	for(int i = 0; i < strlen(c); i++){
+		if( (65 <= c[i] && c[i] <= 90) || (97 <= c[i] && c[i] <= 122) || (48 <= c[i] && c[i] <= 57))
+			strcat(ret, c[i])
+	}
+
+
+
 
 	return "peter";
 }

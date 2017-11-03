@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 void IF(void);  				//author: Noah,		tester: Aleksa
 void ID(void);					//author: Aleksa,	tester: Noah
@@ -41,7 +42,11 @@ int WB_Test(){
 }
 
 int progScanner_Test(){
-	return 0;
+	char* str1, str2;
+	str1 = progScannner("add	$s0,,$s1         ,     $s2");
+	str2 = "add $s0 $s1 $s2";
+
+	return strcmp(str1,str2);
 }
 
 int regNumberConverter_Test(){
