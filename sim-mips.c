@@ -15,9 +15,13 @@
 #define MEMORY_UNFINISHED 0
 #define WRITEBACK_REG_NEW 0  //new contents in the writeback buffer register for writeback stage to consume
 
+enum opcode {add, addi, sub, mult, beq, lw, sw, halt_program};
+
+char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt_program"};
+
 struct inst
 {
-	int opcode;
+	enum opcode op;
 	int rs;
 	int rt;
 	int rd;
@@ -34,9 +38,6 @@ struct buffer
 	int data;
 };
 
-enum opcode {add, addi, sub, mult, beq, lw, sw, halt function};
-
-char** correctOpcode = {'add', 'addi', 'sub', 'mult', 'beq', 'lw', 'sw', 'halt function'};
 
 void IF(void);  							//author: Noah,		tester: Aleksa
 void ID(void);								//author: Aleksa,	tester: Noah
@@ -176,49 +177,55 @@ struct inst parser(char *input){
 	
 
 	struct inst output;
-	char delimeter[] = " ";
-	char opcode[] = strtok(input, delimeter);
-	for(int i=0; i<9; i++){
-		if(i==8){
-			printf("Ooop! Something was entered-in incorrectly!");
-			exit;
-		}
-		if opcode = correctOpcode[i]{
-			return;
+	char* delimeter = " ";
+	char* op = strtok(input, delimeter);
+    enum opcode command;
+    int i;
+	for(i=0; i<9; i++){
+		if(strcmp(op, correctOpcode[i])==0){
+            command = i;
+            i = 9;
 		}
 	}
+    if(i==9){
+        printf("Oops!  Something was entered wrong!\n");
+        output.op = halt_program;  //halt program
+        return output;
+    }
 	
-	enum opcode inst = opcode;
-	output.opcode = inst;
-	if(inst == 8){  //halt program command detected
-		return ouput;
-	}
-	if(inst == 0 || inst == 2 || inst == 3){
-		output.rs = strtok(NULL, delimeter);  //saving rs value
-		output.rt = strtok(NULL, delimeter);  //saving rt value
-		output.rd = strtok(NULL, delimeter);  //saving rd value
+	if(output.op == add || output.op == sub || output.op == mult){
+		output.rs = atoi(strtok(NULL, delimeter));  //saving rs value
+		output.rt = atoi(strtok(NULL, delimeter));  //saving rt value
+		output.rd = atoi(strtok(NULL, delimeter));  //saving rd value
 	}
 	else{
-		output.rs = strtok(NULL, delimeter);
-		output.rt = strtok(NULL, delimeter);
-		output.Imm = strtok(NULL, delimeter);
+		output.rs = atoi(strtok(NULL, delimeter));
+		output.rt = atoi(strtok(NULL, delimeter));
+		output.Imm = atoi(strtok(NULL, delimeter));
 		if(output.Imm>=65536){
-			printf("Ooop! Something was entered-in incorrectly!");
-			exit;
+			printf("Ooop! The immediate value entered was too large!\n");
+            output.op = halt_program;
+            return output;
 		}
 	}
-	free(inst);
 	free(delimeter);
+    free(op);
 
 	return output;
 }
 
 
 void IF(void){
-
+    if((BRANCH_PENDING!=0)||(DECODE_UNFINISHED!=0)){
+        CLK++;  //????
+        //do nothing
+        return;
+    }
+    //ID(readInstruction(PC));
+    PC++;
 }
 
-void ID(void){
+void ID(struct inst i){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
 
 }
 
