@@ -8,12 +8,13 @@
 #define SINGLE 1
 #define BATCH 0
 #define REG_NUM 32
-#define PC 0
-#define BRANCH_PENDING 0
-#define DECODE_UNFINISHED 0
-#define EXECUTE_UNFINISHED 0
-#define MEMORY_UNFINISHED 0
-#define WRITEBACK_REG_NEW 0  //new contents in the writeback buffer register for writeback stage to consume
+int CLK = 0;
+int PC = 0;
+int BRANCH_PENDING = 0;
+int DECODE_UNFINISHED = 0;
+int EXECUTE_UNFINISHED = 0;
+int MEMORY_UNFINISHED = 0;
+int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
 
 enum opcode {add, addi, sub, mult, beq, lw, sw, halt_program};
 
@@ -40,7 +41,7 @@ struct buffer
 
 
 void IF(void);  							//author: Noah,		tester: Aleksa
-void ID(void);								//author: Aleksa,	tester: Noah
+void ID(struct inst);								//author: Aleksa,	tester: Noah
 void EX(void);								//author: Noah,		tester: Aleksa, Peter
 void MEM(void);								//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
