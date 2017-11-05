@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 
-void IF(void);  				//author: Noah,		tester: Aleksa
-void ID(void);					//author: Aleksa,	tester: Noah
-void EX(void);					//author: Noah,		tester:Aleksa, Peter
-void MEM(void);					//author: Peter,	tester: Aleksa
-void WB(void);					//author: Aleksa,	tester: Noah
+void IF(void);  					//author: Noah,		tester: Aleksa
+void ID(void);						//author: Aleksa,	tester: Noah
+void EX(void);						//author: Noah,		tester:Aleksa, Peter
+void MEM(void);						//author: Peter,	tester: Aleksa
+void WB(void);						//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 		//author: Peter,	tester: Noah
-char *regNumberConverter(void); //author: Aleksa,	tester:	Peter
-struct inst parser(void);		//author: Noah,		tester: Peter
+char *regNumberConverter(void);		//author: Aleksa,	tester:	Peter
+struct inst parser(char *input);	//author: Noah,		tester: Peter
 
 /*
 	To run this testing file compile the project using the makefile 

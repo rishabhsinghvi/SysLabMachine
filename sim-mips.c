@@ -34,9 +34,9 @@ struct buffer
 	int data;
 };
 
-enum opcode {add, addi, sub, mult, beq, lw, sw, halt function};
+enum opcode {add, addi, sub, mult, beq, lw, sw, halt};
 
-char** correctOpcode = {'add', 'addi', 'sub', 'mult', 'beq', 'lw', 'sw', 'halt function'};
+char** correctOpcode = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt function"};
 
 void IF(void);  							//author: Noah,		tester: Aleksa
 void ID(void);								//author: Aleksa,	tester: Noah
@@ -44,7 +44,7 @@ void EX(void);								//author: Noah,		tester: Aleksa, Peter
 void MEM(void);								//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
-char *regNumberConverter(void); 			//author: Aleksa,	tester:	Peter
+char *regNumberConverter(char *prog); 			//author: Aleksa,	tester:	Peter
 struct inst parser(char *input);			//author: Noah,		tester: Peter
 //main  									//author: Peter
 
@@ -165,7 +165,7 @@ char *progScannner(char *c){
 	free(ret);
 }
 
-char *regNumberConverter(void){
+char *regNumberConverter(char *prog){
 
 	return 0;
 }
