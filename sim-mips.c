@@ -179,8 +179,191 @@ char *progScannner(char *c){
 }
 
 char *regNumberConverter(char *prog){
+	
+	char* registers1[] = {"zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"};
+	char* registers2[] = {"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7","t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"};	//+16
+	
+	int len = strlen(prog); 
+	int i =0; int last = 0; int end, copy, tempCopy, size, registerNumber, regarg;
+	
+	
+	char* finalString = (char*)malloc(len);
+	
+	char* temp;
+	char* numberTemp;
+	
+	
+	for (i = 0; i < (len);i++){			//parse the string
+		
+		
+		
+		if(prog[i] == '$'){		//if $ is found
+			
+			end = i;
+			
+			while(!(prog[end]==' ')&&!(prog[end]=='\0')){	//find the edge
+				
+				end++;
+			}
+			
+			
+			temp = (char*)malloc(end-i); 	//temporarily copy the argument in temp
+			numberTemp = (char*)malloc(5);
+			
+			tempCopy = 0;
+			
+			for (copy = i+1; copy < end; copy++){
+				temp[tempCopy] = prog[copy];
+				tempCopy++;
+			}
+			temp[tempCopy] = '\0';
+			
+			
+			
+			if (!(strcmp(temp,"0"))){		//check if the argument is 0
+				
+				sprintf(numberTemp, "%d",0);
+				//printf("DIGIT ARGUMENT (zero detected) [%s]\n",numberTemp);
+			}
+			
+			else if(!(atoi(temp) == 0)){	//check if the argument is a number less than 32
+				assert(atoi(temp) < 32);
+				sprintf(numberTemp, "%d",atoi(temp));
+				//printf("DIGIT ARGUMENT [%s]\n",numberTemp);
+				
+			}
+			else{		//check if the argument is a name of one of the registers
+			
+			//this is ugly and should be changed eventually, i couldnt get it to run with strcmp and arrays
+				registerNumber = -1;
 
-	return "return";
+					if(!(strcmp("zero",temp))){
+						registerNumber = 0;
+					}
+					else if(!(strcmp("at",temp))){
+						registerNumber = 1;
+					}
+					else if(!(strcmp("v0",temp))){
+						registerNumber = 2;
+					}
+					else if(!(strcmp("v1",temp))){
+						registerNumber = 3;
+					}
+					else if(!(strcmp("a0",temp))){
+						registerNumber = 4;
+					}
+					else if(!(strcmp("a1",temp))){
+						registerNumber = 5;
+					}
+					else if(!(strcmp("a2",temp))){
+						registerNumber = 6;
+					}
+					else if(!(strcmp("a3",temp))){
+						registerNumber = 7;
+					}
+					else if(!(strcmp("t0",temp))){
+						registerNumber = 8;
+					}
+					else if(!(strcmp("t1",temp))){
+						registerNumber = 9;
+					}
+					else if(!(strcmp("t2",temp))){
+						registerNumber = 10;
+					}
+					else if(!(strcmp("t3",temp))){
+						registerNumber = 11;
+					}
+					else if(!(strcmp("t4",temp))){
+						registerNumber = 12;
+					}
+					else if(!(strcmp("t5",temp))){
+						registerNumber = 13;
+					}
+					else if(!(strcmp("t6",temp))){
+						registerNumber = 14;
+					}
+					else if(!(strcmp("t7",temp))){
+						registerNumber = 15;
+					}
+					else if(!(strcmp("s0",temp))){
+						registerNumber = 16;
+					}
+					else if(!(strcmp("s1",temp))){
+						registerNumber = 17;
+					}
+					else if(!(strcmp("s2",temp))){
+						registerNumber = 18;
+					}
+					else if(!(strcmp("s3",temp))){
+						registerNumber = 19;
+					}
+					else if(!(strcmp("s4",temp))){
+						registerNumber = 20;
+					}
+					else if(!(strcmp("s5",temp))){
+						registerNumber = 21;
+					}
+					else if(!(strcmp("s6",temp))){
+						registerNumber = 22;
+					}
+					else if(!(strcmp("s7",temp))){
+						registerNumber = 23;
+					}
+					else if(!(strcmp("t8",temp))){
+						registerNumber = 24;
+					}
+					else if(!(strcmp("t9",temp))){
+						registerNumber = 25;
+					}
+					else if(!(strcmp("k0",temp))){
+						registerNumber = 26;
+					}
+					else if(!(strcmp("k1",temp))){
+						registerNumber = 27;
+					}
+					else if(!(strcmp("gp",temp))){
+						registerNumber = 28;
+					}
+					else if(!(strcmp("sp",temp))){
+						registerNumber = 29;
+					}
+					else if(!(strcmp("fp",temp))){
+						registerNumber = 30;
+					}
+					else if(!(strcmp("ra",temp))){
+						registerNumber = 31;
+					}
+					
+				
+				assert(registerNumber > -1);			//if no argument found, crash the program
+				sprintf(numberTemp, "%d",registerNumber);
+				//printf("REGISTER [%s] maps to [%s]\n",temp, numberTemp);
+			}
+			
+			copy = 0;
+			
+			while (!(numberTemp[copy]=='\0')){		//append the number
+				finalString[last] = numberTemp[copy];
+				copy++;
+				last++;
+			}
+			
+			free(temp);
+			free(numberTemp);
+			i=end-1;
+			
+		}
+		else{
+			finalString[last] = prog[i];
+			last++;
+		}
+		
+	}
+	finalString[last] = '\0';
+	//printf("[%s]\n\n",finalString);
+
+	//printf("TERM\n");
+	return finalString;
 }
 
 
