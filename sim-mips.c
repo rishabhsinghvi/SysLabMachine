@@ -17,9 +17,9 @@ int EXECUTE_UNFINISHED = 0;
 int MEMORY_UNFINISHED = 0;
 int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
 
-enum opcode {add, addi, sub, mult, beq, lw, sw, halt_program, noop};
+enum opcode {add, addi, sub, mult, beq, lw, sw, halt, noop};
 
-char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt_program"};
+char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt"};
 
 
 long* arrayPntr;
@@ -120,7 +120,7 @@ int main (int argc, char *argv[]){
 	
 	//start your code from here
 
-	arrayPntr = *mips_reg;
+
 
 }
 
@@ -189,20 +189,22 @@ struct inst parser(char *input){
 	
 
 	struct inst output;
+
+	/*
 	char delimeter[] = " ";
-	char opcode[] = strtok(input, delimeter);
+	//char *opcode; opcode = strtok(input, delimeter); 
 	for(int i=0; i<9; i++){
 		if(i==8){
 			printf("Ooop! Something was entered-in incorrectly!");
 			exit;
 		}
-		if opcode = correctOpcode[i]{
+		if (opcode = correctOpcode[i]){
 			return;
 		}
 	}
 	
-	enum opcode inst = opcode;
-	output.opcode = inst;
+	//enum opcode inst = opcode;
+	//output.opcode = inst;
 	if(inst == 8){  //halt program command detected
 		return ouput;
 	}
@@ -222,6 +224,7 @@ struct inst parser(char *input){
 	}
 	//free(inst);
 	free(delimeter);
+	*/
 
 	return output;
 }
@@ -232,7 +235,7 @@ void IF(void){
     if(BRANCH_PENDING!=0){//instroduce noop to the system
         CLK++;  //????
         struct inst toBuffer;
-        toBuffer.op = noop;
+        //toBuffer.op = noop;
         IFID.instruction = toBuffer;
         return;
     }
@@ -253,6 +256,7 @@ void ID(void){  //please make sure that if opcode is 'halt_program' everything s
 }
 
 void EX(void){
+	/*
 	if(IDEX.instruction.op==noop){
 		CLK++; //insert VARIABLE HERE
 		EXECUTE_UNFINISHED = 0;
@@ -268,6 +272,7 @@ void EX(void){
 	if(IDEX.instruction.op==addi){
 		
 	}
+	*/
 }
 
 void MEM(void){
