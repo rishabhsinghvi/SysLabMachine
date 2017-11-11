@@ -8,12 +8,21 @@
 #define SINGLE 1
 #define BATCH 0
 #define REG_NUM 32
-#define PC 0
-#define BRANCH_PENDING 0
-#define DECODE_UNFINISHED 0
-#define EXECUTE_UNFINISHED 0
-#define MEMORY_UNFINISHED 0
-#define WRITEBACK_REG_NEW 0  //new contents in the writeback buffer register for writeback stage to consume
+
+int CLK = 0;
+int PC = 0;
+int BRANCH_PENDING = 0;
+int DECODE_UNFINISHED = 0;
+int EXECUTE_UNFINISHED = 0;
+int MEMORY_UNFINISHED = 0;
+int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
+
+enum opcode {add, addi, sub, mult, beq, lw, sw, halt_program, noop};
+
+char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt_program"};
+
+
+long* arrayPntr;
 
 struct inst
 {
@@ -31,12 +40,13 @@ struct buffer
 	int readytoWrite;
 	int address;
 	int wbReg;
-	int data;
+	long data;
 };
 
-enum opcode {add, addi, sub, mult, beq, lw, sw, halt};
+struct buffer IDEX;
+struct buffer IFID;
+struct inst *IM;  //can we get an intruction count and do malloc later to get exact size?
 
-char** correctOpcode = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt function"};
 
 void IF(void);  							//author: Noah,		tester: Aleksa
 void ID(void);								//author: Aleksa,	tester: Noah
@@ -109,6 +119,9 @@ int main (int argc, char *argv[]){
 	}
 	
 	//start your code from here
+
+	arrayPntr = *mips_reg;
+
 }
 
 //
@@ -214,16 +227,47 @@ struct inst parser(char *input){
 }
 
 
-void IF(void){
 
+void IF(void){
+    if(BRANCH_PENDING!=0){//instroduce noop to the system
+        CLK++;  //????
+        struct inst toBuffer;
+        toBuffer.op = noop;
+        IFID.instruction = toBuffer;
+        return;
+    }
+    if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
+    	CLK++;
+    	return;
+    }
+    IFID.instruction = IM[PC];
+    PC++;
+    IFID.readyToRead = 1;
+    CLK++;
+    return;
 }
 
-void ID(void){
+void ID(void){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+
 
 }
 
 void EX(void){
-
+	if(IDEX.instruction.op==noop){
+		CLK++; //insert VARIABLE HERE
+		EXECUTE_UNFINISHED = 0;
+		return;
+	}
+	if(IDEX.instruction.op==add){
+		EXMEM.data = arrayPntr[IDEX.instruction.rs]+arrayPntr[IDEX.instruction.rt];
+		EXMEM.wbReg = IDEX.instruction.rd;
+		EXMEM.address = -1;  //so you know nothing needs to be written to memory!
+		CLK++;
+		//add to useful process count
+	}
+	if(IDEX.instruction.op==addi){
+		
+	}
 }
 
 void MEM(void){
