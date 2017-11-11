@@ -180,7 +180,7 @@ char *progScannner(char *c){
 
 char *regNumberConverter(char *prog){
 
-	return 0;
+	return "return";
 }
 
 

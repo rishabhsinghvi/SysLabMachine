@@ -2,12 +2,12 @@
 #include <string.h>
 
 void IF(void);  							//author: Noah,		tester: Aleksa
-void ID(struct inst);						//author: Aleksa,	tester: Noah
+void ID(void);						//author: Aleksa,	tester: Noah
 void EX(void);								//author: Noah,		tester: Aleksa, Peter
 void MEM(void);								//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
-char *regNumberConverter(char *prog)		//author: Aleksa,	tester:	Peter
+char *regNumberConverter(char *prog);		//author: Aleksa,	tester:	Peter
 struct inst parser(char *input);			//author: Noah,		tester: Peter
 
 /*
@@ -15,6 +15,10 @@ struct inst parser(char *input);			//author: Noah,		tester: Peter
 	by running the $make command which will create a sim-test and 
 	sim-mips executable (hopefully works for windows, mac and linux)
 */
+
+int foo(int c){
+	return c;
+}
 
 int ExampleTest(){
 	return 0 == 0;
