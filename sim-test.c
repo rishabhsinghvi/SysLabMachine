@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 
-void IF(void);  					//author: Noah,		tester: Aleksa
-void ID(void);						//author: Aleksa,	tester: Noah
-void EX(void);						//author: Noah,		tester:Aleksa, Peter
-void MEM(void);						//author: Peter,	tester: Aleksa
-void WB(void);						//author: Aleksa,	tester: Noah
-char *progScannner(char *c); 		//author: Peter,	tester: Noah
-char *regNumberConverter(void);		//author: Aleksa,	tester:	Peter
-struct inst parser(char *input);	//author: Noah,		tester: Peter
+void IF(void);  							//author: Noah,		tester: Aleksa
+void ID(struct inst);						//author: Aleksa,	tester: Noah
+void EX(void);								//author: Noah,		tester: Aleksa, Peter
+void MEM(void);								//author: Peter,	tester: Aleksa
+void WB(void);								//author: Aleksa,	tester: Noah
+char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
+char *regNumberConverter(char *prog)		//author: Aleksa,	tester:	Peter
+struct inst parser(char *input);			//author: Noah,		tester: Peter
 
 /*
 	To run this testing file compile the project using the makefile 
@@ -60,9 +60,22 @@ int progScanner_Test4(){
 	return strcmp(progScannner("add     $s0,      $s1,,,,,,$2"), "add $s0 $s1 $s2");
 }
 
-int regNumberConverter_Test(){
-	return 0;
+int regNumberConverter_Test1(){
+	return strcmp(regNumberConverter("add $s0 $s1 $s2"), "add 16 17 18");
 }
+
+int regNumberConverter_Test2(){
+	return strcmp(regNumberConverter("add $s0 $s1 $s2"), "add 16 17 18");
+}
+
+int regNumberConverter_Test3(){
+	return strcmp(regNumberConverter("add $s0 $s1 $s2"), "add 16 17 18");
+}
+
+int regNumberConverter_Test4(){
+	return strcmp(regNumberConverter("add $s0 $s1 $s2"), "add 16 17 18");
+}
+
 
 int parser_Test(){
 	return 0;
@@ -80,7 +93,10 @@ int main(int argc, char const *argv[])
 	printf("Program Scanner Test 2: %d\n", progScanner_Test2());
 	printf("Program Scanner Test 3: %d\n", progScanner_Test3());
 	printf("Program Scanner Test 4: %d\n", progScanner_Test4());			
-	printf("regNumberConverter Test: %d\n", regNumberConverter_Test());
+	printf("regNumberConverter Test 1: %d\n", regNumberConverter_Test1());
+	printf("regNumberConverter Test 2: %d\n", regNumberConverter_Test2());
+	printf("regNumberConverter Test 3: %d\n", regNumberConverter_Test3());
+	printf("regNumberConverter Test 4: %d\n", regNumberConverter_Test4());
 	printf("parser Test: %d\n", parser_Test());
 
 
