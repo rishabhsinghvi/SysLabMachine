@@ -16,6 +16,11 @@ int DECODE_UNFINISHED = 0;
 int EXECUTE_UNFINISHED = 0;
 int MEMORY_UNFINISHED = 0;
 int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
+int IFCTDN = 1;
+int IDCTDN = 1;
+int EXCTDN = 1;
+int MEMCTDN = 1;
+int WBCTDN = 1;
 
 enum opcode {add, addi, sub, mult, beq, lw, sw, halt, noop};
 
@@ -23,6 +28,7 @@ char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt"
 
 
 long* arrayPntr;
+long dataMemory[64]; //2kb of 32-bit words
 
 struct inst
 {
@@ -45,12 +51,15 @@ struct buffer
 
 struct buffer IDEX;
 struct buffer IFID;
+struct buffer IDEX;
+struct buffer EXMEM;
+struct buffer MEMWB;
 struct inst *IM;  //can we get an intruction count and do malloc later to get exact size?
 
 
-void IF(void);  							//author: Noah,		tester: Aleksa
+void IF(int c);  							//author: Noah,		tester: Aleksa
 void ID(void);								//author: Aleksa,	tester: Noah
-void EX(void);								//author: Noah,		tester: Aleksa, Peter
+void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter
 void MEM(void);								//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
@@ -373,63 +382,69 @@ struct inst parser(char *input){
 
 	struct inst output;
 
-	/*
 	char delimeter[] = " ";
-	//char *opcode; opcode = strtok(input, delimeter); 
-	for(int i=0; i<9; i++){
-		if(i==8){
+	char *opcode;
+    opcode = strtok(input, delimeter);
+    int i;
+	for(i=0; i<9; i++){
+		if(i==9){
 			printf("Ooop! Something was entered-in incorrectly!");
-			exit;
+            output.opcode = halt;  //IS THIS GOOD?!
+            return output;
 		}
-		if (opcode = correctOpcode[i]){
-			return;
+		if (strcmp(correctOpcode[i],opcode)==0){
+            output.opcode = i;
 		}
 	}
-	
-	//enum opcode inst = opcode;
-	//output.opcode = inst;
-	if(inst == 8){  //halt program command detected
-		return ouput;
+	if(i == 8){  //halt program command detected
+		return output;
 	}
-	if(inst == 0 || inst == 2 || inst == 3){
-		output.rs = strtok(NULL, delimeter);  //saving rs value
-		output.rt = strtok(NULL, delimeter);  //saving rt value
-		output.rd = strtok(NULL, delimeter);  //saving rd value
+	if(i == 0 || i == 2 || i == 3){
+		output.rs = atoi(strtok(NULL, delimeter));  //saving rs value
+		output.rt = atoi(strtok(NULL, delimeter));  //saving rt value
+		output.rd = atoi(strtok(NULL, delimeter));  //saving rd value
 	}
 	else{
-		output.rs = strtok(NULL, delimeter);
-		output.rt = strtok(NULL, delimeter);
-		output.Imm = strtok(NULL, delimeter);
-		if(output.Imm>=65536){
+		output.rs = atoi(strtok(NULL, delimeter));
+		output.rt = atoi(strtok(NULL, delimeter));
+        int immidiate = atoi(strtok(NULL, delimeter));
+		if(immidiate>=65536){
 			printf("Ooop! Something was entered-in incorrectly!");
-			exit;
+            output.opcode = halt;
+            output.Imm = 0;
+            return output;
 		}
+        output.Imm = immidiate;
 	}
 	//free(inst);
 	free(delimeter);
-	*/
+
 
 	return output;
 }
 
 
 
-void IF(void){
-    if(BRANCH_PENDING!=0){//instroduce noop to the system
-        CLK++;  //????
-        struct inst toBuffer;
-        //toBuffer.op = noop;
-        IFID.instruction = toBuffer;
-        return;
+void IF(int c){
+    if(IFCTDN==c){
+        if(BRANCH_PENDING!=0){//instroduce noop to the system
+            struct inst toBuffer;
+            toBuffer.opcode = noop;
+            IFID.instruction = toBuffer;
+            IFCTDN=1;
+            return;
+        }
+        if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
+            IFCTDN=1;
+            return;
+        }
+        IFID.instruction = IM[PC];
+        IFID.readyToRead = 1;
+        IFCTDN = 1;
+    return;
     }
-    if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
-    	CLK++;
-    	return;
-    }
-    IFID.instruction = IM[PC];
-    PC++;
-    IFID.readyToRead = 1;
-    CLK++;
+    IFCTDN++;
+    IFID.readyToRead=0;
     return;
 }
 
@@ -438,25 +453,58 @@ void ID(void){  //please make sure that if opcode is 'halt_program' everything s
 
 }
 
-void EX(void){
-	/*
-	if(IDEX.instruction.op==noop){
-		CLK++; //insert VARIABLE HERE
-		EXECUTE_UNFINISHED = 0;
-		return;
-	}
-	if(IDEX.instruction.op==add){
-		EXMEM.data = arrayPntr[IDEX.instruction.rs]+arrayPntr[IDEX.instruction.rt];
-		EXMEM.wbReg = IDEX.instruction.rd;
-		EXMEM.address = -1;  //so you know nothing needs to be written to memory!
-		CLK++;
-		//add to useful process count
-	}
-	if(IDEX.instruction.op==addi){
-		
-	}
-	*/
+void EX(int n, int m){
+    if(IDEX.instruction.opcode==noop){
+        EXECUTE_UNFINISHED = 0;
+        EXCTDN = 1;
+        return;
+    }
+    if(IDEX.instruction.opcode==add){
+        EXMEM.data = arrayPntr[IDEX.instruction.rs]+arrayPntr[IDEX.instruction.rt];
+        EXMEM.wbReg = IDEX.instruction.rd;
+        EXMEM.address = -1;  //so you know nothing needs to be written to memory!
+        //add to useful process count
+        return;
+    }
+    if(IDEX.instruction.opcode==addi){
+        EXMEM.data = arrayPntr[IDEX.instruction.rs]+IDEX.instruction.Imm;
+        EXMEM.wbReg = IDEX.instruction.rt;
+        EXMEM.address = -1;
+        EXCTDN = 1;
+        return;
+    }
+    if(IDEX.instruction.opcode==sub){
+        EXMEM.data = arrayPntr[IDEX.instruction.rs]-arrayPntr[IDEX.instruction.rt];
+        EXMEM.wbReg = IDEX.instruction.rd;
+        EXMEM.address = -1;  //so you know nothing needs to be written to memory!
+        EXCTDN = 1;
+        return;
+    }
+    if(IDEX.instruction.opcode==beq){
+        BRANCH_PENDING=1; //maybe should be done in the ID stage
+        if((arrayPntr[IDEX.instruction.rs]-arrayPntr[IDEX.instruction.rt])==0){
+            PC=PC+IDEX.instruction.Imm;
+            EXMEM.wbReg = -1;  //do not write anything to reg file
+            EXMEM.address = -1;
+            BRANCH_PENDING = 0;
+            EXCTDN = 1;
+            return;
+        }
+    }
+    if(IDEX.instruction.opcode==lw){
+        EXMEM.wbReg = IDEX.instruction.rt;
+        EXMEM.data = dataMemory[IDEX.instruction.rs+IDEX.instruction.Imm];
+        EXMEM.address = -1;
+        EXCTDN = 1;
+        return;
+    }
+    if(IDEX.instruction.opcode==sw){
+        EXMEM.wbReg = IDEX.instruction.rt;
+        
+    }
+    
 }
+
 
 void MEM(void){
 
