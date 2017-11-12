@@ -16,6 +16,7 @@ int DECODE_UNFINISHED = 0;
 int EXECUTE_UNFINISHED = 0;
 int MEMORY_UNFINISHED = 0;
 int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
+int RAW_HAZARD[2];
 int IFCTDN = 1;
 int IDCTDN = 1;
 int EXCTDN = 1;
@@ -438,6 +439,10 @@ void IF(int c){
             IFCTDN=1;
             return;
         }
+        if((IM[PC].rs==IM[PC-1].rd)||(IM[PC].rt==IM[PC-1].rd)) {
+            IFID.instruction.opcode = noop;  //solves RAW hazard by introducing NO-OP into pipeline
+            PC = PC-1;
+        }
         IFID.instruction = IM[PC];
         IFID.readyToRead = 1;
         IFCTDN = 1;
@@ -454,15 +459,18 @@ void ID(void){  //please make sure that if opcode is 'halt_program' everything s
 }
 
 void EX(int n, int m){
+    if(EXCTDN==n){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
         EXCTDN = 1;
+        EXMEM.readyToRead = 1;
         return;
     }
     if(IDEX.instruction.opcode==add){
         EXMEM.data = arrayPntr[IDEX.instruction.rs]+arrayPntr[IDEX.instruction.rt];
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
+        EXMEM.readyToRead = 1;
         //add to useful process count
         return;
     }
@@ -471,6 +479,7 @@ void EX(int n, int m){
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
         EXCTDN = 1;
+        EXMEM.readyToRead = 1;
         return;
     }
     if(IDEX.instruction.opcode==sub){
@@ -478,6 +487,7 @@ void EX(int n, int m){
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXCTDN = 1;
+        EXMEM.readyToRead = 1;
         return;
     }
     if(IDEX.instruction.opcode==beq){
@@ -488,6 +498,7 @@ void EX(int n, int m){
             EXMEM.address = -1;
             BRANCH_PENDING = 0;
             EXCTDN = 1;
+            EXMEM.readyToRead = 1;
             return;
         }
     }
@@ -495,15 +506,32 @@ void EX(int n, int m){
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = 1;
+        EXMEM.readyToRead = 1;
         return;
     }
     if(IDEX.instruction.opcode==sw){
         EXMEM.data = arrayPntr[IDEX.instruction.rt];
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = 1;
+        EXMEM.readyToRead = 1;
         return;
         
     }
+    }
+    if(EXCTDN==m){
+        if(IDEX.instruction.opcode==mult){
+            int result = arrayPntr[IDEX.instruction.rs]*arrayPntr[IDEX.instruction.rt];
+            result = result|0x0000ffff; //making sure the result if only the low reg
+            EXMEM.data = result;
+            EXMEM.wbReg = IDEX.instruction.rd;
+            EXCTDN = 1;
+            EXMEM.readyToRead = 1;
+            return;
+            
+        }
+    }
+    EXCTDN++;
+    return;
     
 }
 
