@@ -463,9 +463,69 @@ int IF(int c, int pgm_c){
     return c;
 }
 
-void ID(void){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
-	//check ready to write
-	//
+struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+	if(IfId.readyToRead == 0){
+		//not ready to read
+		return IDEX;
+	}
+	if(IfId.instruction.opcode == haltSimulation){
+	//halt simulation instruction detected, propagate the halt instruction
+	return IfId;
+	}
+	
+	
+	switch(IfId.instruction.opcode){
+		case add:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IDEX = IfId;
+			return IfId;
+		case addi:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case sub:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case mult:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case beq:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case lw:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+		
+		case sw:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case haltSimulation:
+			
+			return IfId;
+			
+		case noop:
+			
+			return IfId;
+		
+	}
+	
 
 }
 
