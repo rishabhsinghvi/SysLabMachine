@@ -34,9 +34,9 @@ long dataMemory[64]; //2kb of 32-bit words
 
 struct inst
 {
-	int opcode;
-	int rs;
-	int rt;
+	enum opcode opcode;
+	long rs;
+	long rt;
 	int rd;
 	int Imm;
 };
@@ -444,7 +444,7 @@ struct inst parser(char *input){
 
 void IF(int c){
     if(IFCTDN==c){
-        if(BRANCH_PENDING!=0){//instroduce noop to the system
+        if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){//instroduce noop to the system
             struct inst toBuffer;
             toBuffer.opcode = noop;
             IFID.instruction = toBuffer;
@@ -454,10 +454,6 @@ void IF(int c){
         if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
             IFCTDN=1;
             return;
-        }
-        if((IM[PC].rs==IM[PC-1].rd)||(IM[PC].rt==IM[PC-1].rd)) {
-            IFID.instruction.opcode = noop;  //solves RAW hazard by introducing NO-OP into pipeline
-            PC = PC-1;
         }
         IFID.instruction = IM[PC];
         IFID.readyToRead = 1;
@@ -535,16 +531,19 @@ void EX(int n, int m){
     }
     if(IDEX.instruction.opcode==haltSimulation){
     	EXMEM.instruction = IDEX.instruction;
+    	EXMEM.wbReg = -1;
+    	EXMEM.address = -1;
     	EXCTDN = 1;
     	return;
     }
-    }
+}
     if(EXCTDN==m){
         if(IDEX.instruction.opcode==mult){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
             result = result|0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
+            EXMEM.address = -1;
             EXCTDN = 1;
             EXMEM.readyToRead = 1;
             return;
