@@ -493,13 +493,15 @@ void EX(int n, int m){
     }
     if(IDEX.instruction.opcode==lw){
         EXMEM.wbReg = IDEX.instruction.rt;
-        EXMEM.data = dataMemory[IDEX.instruction.rs+IDEX.instruction.Imm];
-        EXMEM.address = -1;
+        EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = 1;
         return;
     }
     if(IDEX.instruction.opcode==sw){
-        EXMEM.wbReg = IDEX.instruction.rt;
+        EXMEM.data = arrayPntr[IDEX.instruction.rt];
+        EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
+        EXCTDN = 1;
+        return;
         
     }
     
