@@ -59,9 +59,9 @@ struct buffer MEMWB;
 struct inst *IM;  //can we get an intruction count and do malloc later to get exact size?
 
 
-void IF(int c);  							//author: Noah,		tester: Aleksa , Done in testing
+int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
 void ID(void);								//author: Aleksa,	tester: Noah, 
-void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
+int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 struct buffer MEM(struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
@@ -442,8 +442,7 @@ struct inst parser(char *input){
 
 
 
-void IF(int c){
-    if(IFCTDN==c){
+int IF(int c, int pgm_c){
         if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){//instroduce noop to the system
             struct inst toBuffer;
             toBuffer.opcode = noop;
@@ -455,14 +454,12 @@ void IF(int c){
             IFCTDN=1;
             return;
         }
-        IFID.instruction = IM[PC];
+        IFID.instruction = IM[pgm_c];
         IFID.readyToRead = 1;
         IFCTDN = 1;
-    return;
-    }
-    IFCTDN++;
+    IFCTDN = IFCTDN + c;
     IFID.readyToRead=0;
-    return;
+    return c;
 }
 
 void ID(void){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
@@ -472,36 +469,35 @@ void ID(void){  //please make sure that if opcode is 'halt_program' everything s
 }
 
 void EX(int n, int m){
-    if(EXCTDN==n){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
-        EXCTDN = 1;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==add){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXMEM.readyToRead = 1;
+        EXCTDN = EXCTDN + n;
         //add to useful process count
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==addi){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==sub){
         EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==beq){
         BRANCH_PENDING=1; //maybe should be done in the ID stage
@@ -511,48 +507,41 @@ void EX(int n, int m){
         EXMEM.wbReg = -1;  //do not write anything to reg file
         EXMEM.address = -1;
         BRANCH_PENDING = 0;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==lw){
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==sw){
         EXMEM.data = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;  
+        return n;  
     }
     if(IDEX.instruction.opcode==haltSimulation){
     	EXMEM.instruction = IDEX.instruction;
     	EXMEM.wbReg = -1;
     	EXMEM.address = -1;
-    	EXCTDN = 1;
-    	return;
+    	return n;
     }
-}
-    if(EXCTDN==m){
         if(IDEX.instruction.opcode==mult){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
             result = result|0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
             EXMEM.address = -1;
-            EXCTDN = 1;
             EXMEM.readyToRead = 1;
-            return;
+            EXCTDN = EXCTDN + m;
+            return m;
             
         }
-    }
-    EXCTDN++;
-    return;
-    
 }
 
 
