@@ -62,7 +62,7 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 void IF(int c);  							//author: Noah,		tester: Aleksa , Done in testing
 void ID(void);								//author: Aleksa,	tester: Noah, 
 void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
-void MEM(void);								//author: Peter,	tester: Aleksa
+struct buffer MEM(struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
 char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, Done 
@@ -470,7 +470,8 @@ void IF(int c){
 }
 
 void ID(void){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
-
+	//check ready to write
+	//
 
 }
 
@@ -556,8 +557,18 @@ void EX(int n, int m){
 }
 
 
-void MEM(void){
+struct buffer MEM(struct buffer ExeMem){
+	int address = ExeMem.instruction.rs + ExeMem.instruction.Imm;
 
+	if(ExeMem.instruction.opcode == sw){
+		dataMemory[address] = ExeMem.instruction.rt;
+	}else if(ExeMem.instruction.opcode == lw){
+		dataMemory[address] = ExeMem.instruction.rt;
+	}
+
+	MEMWB = ExeMem;
+
+	return MEMWB;
 }
 
 void WB(void){
