@@ -16,16 +16,17 @@ int DECODE_UNFINISHED = 0;
 int EXECUTE_UNFINISHED = 0;
 int MEMORY_UNFINISHED = 0;
 int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
-int RAW_HAZARD[2];
+int RAW_HAZARD = 0;
+int HALT_SIMULATION = 0;
 int IFCTDN = 1;
 int IDCTDN = 1;
 int EXCTDN = 1;
 int MEMCTDN = 1;
 int WBCTDN = 1;
 
-enum opcode {add, addi, sub, mult, beq, lw, sw, halt, noop};
+enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 
-char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "halt"};
+char* correctOpcode[] = {"add", "addi", "sub", "mult", "beq", "lw", "sw", "haltSimulation"};
 
 
 long* arrayPntr;
@@ -406,7 +407,8 @@ struct inst parser(char *input){
 	for(i=0; i<9; i++){
 		if(i==9){
 			printf("Ooop! Something was entered-in incorrectly!");
-            output.opcode = halt;  //IS THIS GOOD?!
+            output.opcode = haltSimulation;
+            HALT_SIMULATION = 1;
             return output;
 		}
 		if (strcmp(correctOpcode[i],opcode)==0){
@@ -433,8 +435,6 @@ struct inst parser(char *input){
 		}
         output.Imm = immidiate;
 	}
-	//free(inst);
-	free(delimeter);
 
 
 	return output;
@@ -484,7 +484,7 @@ void EX(int n, int m){
         return;
     }
     if(IDEX.instruction.opcode==add){
-        EXMEM.data = arrayPntr[IDEX.instruction.rs]+arrayPntr[IDEX.instruction.rt];
+        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXMEM.readyToRead = 1;
@@ -492,7 +492,7 @@ void EX(int n, int m){
         return;
     }
     if(IDEX.instruction.opcode==addi){
-        EXMEM.data = arrayPntr[IDEX.instruction.rs]+IDEX.instruction.Imm;
+        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
         EXCTDN = 1;
@@ -500,7 +500,7 @@ void EX(int n, int m){
         return;
     }
     if(IDEX.instruction.opcode==sub){
-        EXMEM.data = arrayPntr[IDEX.instruction.rs]-arrayPntr[IDEX.instruction.rt];
+        EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXCTDN = 1;
@@ -509,15 +509,15 @@ void EX(int n, int m){
     }
     if(IDEX.instruction.opcode==beq){
         BRANCH_PENDING=1; //maybe should be done in the ID stage
-        if((arrayPntr[IDEX.instruction.rs]-arrayPntr[IDEX.instruction.rt])==0){
+        if((IDEX.instruction.rs-IDEX.instruction.rt)==0){
             PC=PC+IDEX.instruction.Imm;
-            EXMEM.wbReg = -1;  //do not write anything to reg file
-            EXMEM.address = -1;
-            BRANCH_PENDING = 0;
-            EXCTDN = 1;
-            EXMEM.readyToRead = 1;
-            return;
         }
+        EXMEM.wbReg = -1;  //do not write anything to reg file
+        EXMEM.address = -1;
+        BRANCH_PENDING = 0;
+        EXCTDN = 1;
+        EXMEM.readyToRead = 1;
+        return;
     }
     if(IDEX.instruction.opcode==lw){
         EXMEM.wbReg = IDEX.instruction.rt;
@@ -527,17 +527,21 @@ void EX(int n, int m){
         return;
     }
     if(IDEX.instruction.opcode==sw){
-        EXMEM.data = arrayPntr[IDEX.instruction.rt];
+        EXMEM.data = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = 1;
         EXMEM.readyToRead = 1;
-        return;
-        
+        return;  
+    }
+    if(IDEX.instruction.opcode==haltSimulation){
+    	EXMEM.instruction = IDEX.instruction;
+    	EXCTDN = 1;
+    	return;
     }
     }
     if(EXCTDN==m){
         if(IDEX.instruction.opcode==mult){
-            int result = arrayPntr[IDEX.instruction.rs]*arrayPntr[IDEX.instruction.rt];
+            int result = IDEX.instruction.rs*IDEX.instruction.rt;
             result = result|0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
