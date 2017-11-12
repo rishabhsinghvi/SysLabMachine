@@ -146,7 +146,31 @@ int main (int argc, char *argv[]){
 		} 
 	}
 	
-	//start your code from here
+	//start your code from here**********************************
+		
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){
 		pgm_c = pgm_c -1;
 	}

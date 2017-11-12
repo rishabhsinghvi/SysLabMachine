@@ -106,9 +106,15 @@ int parser_Test1(){
 }
 
 int parser_Test2(){
-	struct inst test = {0, 16, 17, 18, 0};
+	struct inst test = {4, 17, 18, 0, 4};
 
-	return compare_instructions(test, parser("lw  17 18"));
+	return compare_instructions(test, parser("lw  17 4 18"));
+}
+
+int parser_Test3(){
+	struct inst test = {6, 8, 9, 0, 100};
+
+	return compare_instructions(test, parser("beq  8 9 100"));
 }
 
 int main(int argc, char const *argv[])
@@ -128,7 +134,9 @@ int main(int argc, char const *argv[])
 	printf("regNumberConverter Test 3: %d\n\n", regNumberConverter_Test3());
 	printf("regNumberConverter Test 4: %d\n\n", regNumberConverter_Test4());
 	printf("regNumberConverter Test 5: %d\n\n", regNumberConverter_Test5());
-	printf("parser Test: %d\n\n", parser_Test1());
+	printf("parser Test1: %d\n\n", parser_Test1());
+	printf("parser Test2: %d\n\n", parser_Test2());
+	printf("parser Test3: %d\n\n", parser_Test3());
 
 
 
