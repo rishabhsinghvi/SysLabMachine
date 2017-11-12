@@ -61,7 +61,7 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 
 
 int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
-void ID(void);								//author: Aleksa,	tester: Noah, 
+struct buffer ID(struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
@@ -512,8 +512,10 @@ struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'hal
 			return IfId;
 		
 		case sw:
+			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
 			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+
 			
 			return IfId;
 			
@@ -530,7 +532,7 @@ struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'hal
 
 }
 
-void EX(int n, int m){
+int EX(int n, int m){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
         EXMEM.readyToRead = 1;
