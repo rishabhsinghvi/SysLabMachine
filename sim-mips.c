@@ -18,9 +18,9 @@ int MEMORY_UNFINISHED = 0;
 int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
 int RAW_HAZARD = 0;
 int HALT_SIMULATION = 0;
-int IFCTDN = 1;
-int IDCTDN = 1;
-int EXCTDN = 1;
+int IFCTDN = 0;
+int IDCTDN = 0;
+int EXCTDN = 0;
 int MEM_cycle_count = 0;
 int WB_cycle_count = 0;
 
@@ -147,8 +147,25 @@ int main (int argc, char *argv[]){
 	}
 	
 	//start your code from here
-	if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){
+	while(HALT_SIMULATION==0){
+		sim_cycle = sim_cycle + IF(c);
+		if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){
 		pgm_c = pgm_c -1;
+		struct buffer theBuffer = ID(IFID,1,*mips_reg);
+		sim_cycle++;
+		sim_cycle = sim_cycle + EX(n,m);
+		sim_cycle = sim_cycle + MEM(sim_cycle,c,EXMEM);
+		sim_cycle = sim_cycle + WB(1,*mips_reg,MEMWB);
+	}
+
+	double iftime = (100*IFCTDN)/sim_cycle;
+	double idtime = (100*IDCTDN)/sim_cycle;
+	double extime = (100*EXCTDN)/sim_cycle;
+	double memtime = (100*MEM_cycle_count)/sim_cycle;
+	double wbtime = (100*WB_cycle_count)/sim_cycle;
+
+	printf("The percetage of time used by IF: %d \nThe percetage of time used by ID: %d \nThe percetage of time used by EX: %d \nThe percetage of time used by MEM: %d \nThe percetage of time used by WB: %d \n", iftime, idtime, extime, memtime, wbtime);
+
 	}
 
 
@@ -402,8 +419,7 @@ struct inst parser(char *input){
 		struct inst output;
 
 	char delimeter[] = " ";
-	char *opcode;
-    opcode = strtok(input, delimeter);
+	char *opcode = strtok(input, delimeter);
     int i;
 	for(i=0; i<9; i++){
 		if(i==9){
