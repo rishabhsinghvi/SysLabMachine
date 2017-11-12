@@ -108,13 +108,13 @@ int parser_Test1(){
 int parser_Test2(){
 	struct inst test = {4, 17, 18, 0, 4};
 
-	return compare_instructions(test, parser("lw  17 4 18"));
+	return compare_instructions(test, parser("lw 17 4 18"));
 }
 
 int parser_Test3(){
 	struct inst test = {6, 8, 9, 0, 100};
 
-	return compare_instructions(test, parser("beq  8 9 100"));
+	return compare_instructions(test, parser("beq 8 9 100"));
 }
 
 int main(int argc, char const *argv[])

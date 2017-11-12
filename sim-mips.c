@@ -61,7 +61,7 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 
 
 int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
-struct buffer ID(struct buffer IfId, int c_count, long *registers);								//author: Aleksa,	tester: Noah, 
+struct buffer ID(struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
@@ -147,10 +147,14 @@ int main (int argc, char *argv[]){
 	}
 	
 	//start your code from here**********************************
-		
+
+	/*
+	while(fgets()){
+
+	}
+	*/
 
 
-	
 
 
 
@@ -488,79 +492,72 @@ int IF(int c, int pgm_c){
     return c;
 }
 
-int ID(struct buffer IfId, int c_count, long *registers){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
 	if(IfId.readyToRead == 0){
 		//not ready to read
-		return c_count;
+		return IDEX;
 	}
-	
+	if(IfId.instruction.opcode == haltSimulation){
+	//halt simulation instruction detected, propagate the halt instruction
+	return IfId;
+	}
 	
 	
 	switch(IfId.instruction.opcode){
 		case add:
-			IfId.instruction.rs = registers[IfId.instruction.rs];
-			IfId.instruction.rt = registers[IfId.instruction.rt];
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
 			IDEX = IfId;
-			c_count++;
-			break;
-			
+			return IfId;
 		case addi:
-			IfId.instruction.rs = registers[IfId.instruction.rs];
-			IfId.instruction.rt = IfId.instruction.rt;
-			IDEX = IfId;
-			c_count++;
-			break;
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
 			
 		case sub:
-			IfId.instruction.rs = registers[IfId.instruction.rs];
-			IfId.instruction.rt = registers[IfId.instruction.rt];
-			IDEX = IfId;
-			c_count++;
-			break;
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
 			
 		case mult:
-			IfId.instruction.rs = registers[IfId.instruction.rs];
-			IfId.instruction.rt = registers[IfId.instruction.rt];
-			IDEX = IfId;
-			c_count++;
-			break;
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
 			
 		case beq:
-			IfId.instruction.rs = registers[IfId.instruction.rs];
-			IfId.instruction.rt = registers[IfId.instruction.rt];
-			IDEX = IfId;
-			c_count++;
-			break;
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
 			
 		case lw:
-			IfId.instruction.rs = registers[IfId.instruction.rs];
-			IDEX = IfId;
-			c_count++;
-			break;
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
 		
 		case sw:
-			//preserves the value of rt in rd
-			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rd = IfId.instruction.rt;
-			IfId.instruction.rt = registers[IfId.instruction.rt];
-			IDEX = IfId;
-			c_count++;
-			break;
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+
+			
+			return IfId;
 			
 		case haltSimulation:
-			IDEX = IfId;
-			break;
+			
+			return IfId;
 			
 		case noop:
-			IDEX = IfId;
-			c_count++;
-			break;
+			
+			return IfId;
 		
 	}
 	
-	//printf("a");
-	
-	return c_count;
+
 }
 
 int EX(int n, int m){
@@ -658,8 +655,6 @@ int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem){//should take 
 
 	MEMWB = ExeMem;
 
-
-
 	return cycles_counter;
 }
 
@@ -677,7 +672,6 @@ int WB(int cycles_count, long *registers, struct buffer MemWb){
 		WB_cycle_count++;
 		cycles_count++;
 	}
-
 
 
 	return cycles_count;
