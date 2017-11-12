@@ -32,8 +32,30 @@ int ID_Test(){
 	return 0;
 }
 
-int EX_Test(){
-	return 0;
+int EX_Test_Add(){
+	//addition test
+		IDEX.instruction.opcode = 0;
+		IDEX.instruction.rs = 4;
+		IDEX.instruction.rt = 3;
+		int i = EX(4,5);
+
+	return EXMEM.data - 7;
+}
+
+int EX_Test_Sub(){
+	//subtration test
+	IDEX.instruction.opcode = 1;
+	IDEX.instruction.rs = 4;
+	IDEX.instruction.rt = 3;
+	int i = EX(4,5);
+
+	return EXMEM.data - 1;
+}
+
+int EX_Test_Addi(){
+	//add-immediate test
+	IDEX.instruction.opcode = 2;
+	
 }
 
 int MEM_Test(){
