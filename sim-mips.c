@@ -146,7 +146,9 @@ int main (int argc, char *argv[]){
 	}
 	
 	//start your code from here
-
+	if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){
+		pgm_c = pgm_c -1;
+	}
 
 
 }
@@ -447,12 +449,11 @@ int IF(int c, int pgm_c){
             struct inst toBuffer;
             toBuffer.opcode = noop;
             IFID.instruction = toBuffer;
-            IFCTDN=1;
-            return;
+            IFCTDN=IFCTDN+c;
+            return c;
         }
         if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
-            IFCTDN=1;
-            return;
+            return c;
         }
         IFID.instruction = IM[pgm_c];
         IFID.readyToRead = 1;
