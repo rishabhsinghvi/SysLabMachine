@@ -398,9 +398,7 @@ char *regNumberConverter(char *prog){
 
 struct inst parser(char *input){
 
-	
-
-	struct inst output;
+		struct inst output;
 
 	char delimeter[] = " ";
 	char *opcode;
