@@ -58,15 +58,31 @@ struct buffer MEMWB;
 struct inst *IM;  //can we get an intruction count and do malloc later to get exact size?
 
 
-void IF(int c);  							//author: Noah,		tester: Aleksa
-void ID(void);								//author: Aleksa,	tester: Noah
-void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter
+void IF(int c);  							//author: Noah,		tester: Aleksa , Done in testing
+void ID(void);								//author: Aleksa,	tester: Noah, 
+void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 void MEM(void);								//author: Peter,	tester: Aleksa
 void WB(void);								//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
-char *regNumberConverter(char *prog); 			//author: Aleksa,	tester:	Peter
-struct inst parser(char *input);			//author: Noah,		tester: Peter
+char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, Done 
+struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
+
+
+int str_comp(char str1[], char str2[]){
+	int ctr=0;
+
+	while(str1[ctr]==str2[ctr]){
+		if(str1[ctr]=='\0'||str2[ctr]=='\0')
+			break;
+		ctr++;
+	}
+
+	if(str1[ctr]=='\0' && str2[ctr]=='\0')
+		return 0;
+	else
+		return -1;
+}
 
 
 int main (int argc, char *argv[]){
