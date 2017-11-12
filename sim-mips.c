@@ -21,8 +21,8 @@ int HALT_SIMULATION = 0;
 int IFCTDN = 1;
 int IDCTDN = 1;
 int EXCTDN = 1;
-int MEMCTDN = 1;
-int WBCTDN = 1;
+int MEM_cycle_count = 0;
+int WB_cycle_count = 0;
 
 enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 
@@ -62,8 +62,8 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
 void ID(void);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
-struct buffer MEM(struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
-void WB(void);								//author: Aleksa,	tester: Noah
+int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
+int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
 char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, Done 
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
@@ -544,22 +544,46 @@ void EX(int n, int m){
         }
 }
 
-
-struct buffer MEM(struct buffer ExeMem){
+//takes previous buffer and return the total cycles taken so far
+int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem){//should take sim_cycle, c from command line and last buffer
 	int address = ExeMem.instruction.rs + ExeMem.instruction.Imm;
 
 	if(ExeMem.instruction.opcode == sw){
-		dataMemory[address] = ExeMem.instruction.rt;
+		ExeMem.instruction.rt = dataMemory[address];
+
+		cycles_counter += mem_cycles;
+		MEM_cycle_count += mem_cycles;
+
 	}else if(ExeMem.instruction.opcode == lw){
-		ExeMem.instruction.rt == dataMemory[address]; 
+		dataMemory[address] = ExeMem.instruction.rt; 
+
+		cycles_counter += mem_cycles;
+		MEM_cycle_count += mem_cycles;
 	}
 
 	MEMWB = ExeMem;
 
-	return MEMWB;
+
+
+	return cycles_counter;
 }
 
-void WB(void){
+//takes previous buffer and returns total cycles taken so far
+int WB(int cycles_count, long *registers, struct buffer MemWb){
+	if((MemWb.instruction.opcode >= add) || (MemWb.instruction.opcode <= mult)){
+		registers[MemWb.instruction.rd] = MemWb.data;
 
+		WB_cycle_count++;
+		cycles_count++;
+
+	}else if(MemWb.instruction.opcode == sw){
+		registers[MemWb.instruction.rd] = MemWb.instruction.rt;
+
+		WB_cycle_count++;
+		cycles_count++;
+	}
+
+
+
+	return cycles_count;
 }
-
