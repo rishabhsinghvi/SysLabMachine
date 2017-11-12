@@ -60,12 +60,12 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 
 
 void IF(int c);  							//author: Noah,		tester: Aleksa , Done in testing
-void ID(void);								//author: Aleksa,	tester: Noah, 
+void ID(void);								//author: Aleksa,	tester: Noah,  , Done 
 void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
-char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
-char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, Done 
+char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
+char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
@@ -162,7 +162,7 @@ char *progScannner(char *c){
 	for (int i = 0; i < strlen(c); i++){
 
 
-		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9')){
+		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9') || c[i] == '$'){
 			t[0] = c[i];
 			t[1] = '\0';
 			strcat(ret, t);
@@ -429,7 +429,7 @@ struct inst parser(char *input){
         int immidiate = atoi(strtok(NULL, delimeter));
 		if(immidiate>=65536){
 			printf("Ooop! Something was entered-in incorrectly!");
-            output.opcode = halt;
+            output.opcode = haltSimulation;
             output.Imm = 0;
             return output;
 		}
