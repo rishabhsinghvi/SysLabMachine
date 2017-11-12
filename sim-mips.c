@@ -59,9 +59,10 @@ struct buffer MEMWB;
 struct inst *IM;  //can we get an intruction count and do malloc later to get exact size?
 
 
-void IF(int c);  							//author: Noah,		tester: Aleksa , Done in testing
-void ID(void);								//author: Aleksa,	tester: Noah,  , Done 
-void EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
+
+int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
+void ID(void);								//author: Aleksa,	tester: Noah, 
+int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
@@ -146,7 +147,9 @@ int main (int argc, char *argv[]){
 	}
 	
 	//start your code from here
-
+	if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){
+		pgm_c = pgm_c -1;
+	}
 
 
 }
@@ -442,66 +445,121 @@ struct inst parser(char *input){
 
 
 
-void IF(int c){
-    if(IFCTDN==c){
+int IF(int c, int pgm_c){
         if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){//instroduce noop to the system
             struct inst toBuffer;
             toBuffer.opcode = noop;
             IFID.instruction = toBuffer;
-            IFCTDN=1;
-            return;
+            IFCTDN=IFCTDN+c;
+            return c;
         }
         if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
-            IFCTDN=1;
-            return;
+            return c;
         }
-        IFID.instruction = IM[PC];
+        IFID.instruction = IM[pgm_c];
         IFID.readyToRead = 1;
         IFCTDN = 1;
-    return;
-    }
-    IFCTDN++;
+    IFCTDN = IFCTDN + c;
     IFID.readyToRead=0;
-    return;
+    return c;
 }
 
-void ID(void){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
-	//check ready to write
-	//
+struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+	if(IfId.readyToRead == 0){
+		//not ready to read
+		return IDEX;
+	}
+	if(IfId.instruction.opcode == haltSimulation){
+	//halt simulation instruction detected, propagate the halt instruction
+	return IfId;
+	}
+	
+	
+	switch(IfId.instruction.opcode){
+		case add:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IDEX = IfId;
+			return IfId;
+		case addi:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case sub:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case mult:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case beq:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case lw:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+		
+		case sw:
+			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
+			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			
+			return IfId;
+			
+		case haltSimulation:
+			
+			return IfId;
+			
+		case noop:
+			
+			return IfId;
+		
+	}
+	
 
 }
 
 void EX(int n, int m){
-    if(EXCTDN==n){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
-        EXCTDN = 1;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==add){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXMEM.readyToRead = 1;
+        EXCTDN = EXCTDN + n;
         //add to useful process count
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==addi){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==sub){
         EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==beq){
         BRANCH_PENDING=1; //maybe should be done in the ID stage
@@ -511,48 +569,41 @@ void EX(int n, int m){
         EXMEM.wbReg = -1;  //do not write anything to reg file
         EXMEM.address = -1;
         BRANCH_PENDING = 0;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==lw){
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;
+        return n;
     }
     if(IDEX.instruction.opcode==sw){
         EXMEM.data = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
-        EXCTDN = 1;
+        EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
-        return;  
+        return n;  
     }
     if(IDEX.instruction.opcode==haltSimulation){
     	EXMEM.instruction = IDEX.instruction;
     	EXMEM.wbReg = -1;
     	EXMEM.address = -1;
-    	EXCTDN = 1;
-    	return;
+    	return n;
     }
-}
-    if(EXCTDN==m){
         if(IDEX.instruction.opcode==mult){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
             result = result|0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
             EXMEM.address = -1;
-            EXCTDN = 1;
             EXMEM.readyToRead = 1;
-            return;
+            EXCTDN = EXCTDN + m;
+            return m;
             
         }
-    }
-    EXCTDN++;
-    return;
-    
 }
 
 //takes previous buffer and return the total cycles taken so far
