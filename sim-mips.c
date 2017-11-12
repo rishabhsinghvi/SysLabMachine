@@ -61,7 +61,7 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 
 
 int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
-struct buffer ID(struct buffer IfId);								//author: Aleksa,	tester: Noah, 
+struct buffer ID(struct buffer IfId, int c_count, long *registers);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
@@ -464,72 +464,79 @@ int IF(int c, int pgm_c){
     return c;
 }
 
-struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+int ID(struct buffer IfId, int c_count, long *registers){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
 	if(IfId.readyToRead == 0){
 		//not ready to read
-		return IDEX;
+		return c_count;
 	}
-	if(IfId.instruction.opcode == haltSimulation){
-	//halt simulation instruction detected, propagate the halt instruction
-	return IfId;
-	}
+	
 	
 	
 	switch(IfId.instruction.opcode){
 		case add:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
-			return IfId;
-		case addi:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			c_count++;
+			break;
 			
-			return IfId;
+		case addi:
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = IfId.instruction.rt;
+			IDEX = IfId;
+			c_count++;
+			break;
 			
 		case sub:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
-			
-			return IfId;
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
+			IDEX = IfId;
+			c_count++;
+			break;
 			
 		case mult:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
-			
-			return IfId;
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
+			IDEX = IfId;
+			c_count++;
+			break;
 			
 		case beq:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
-			
-			return IfId;
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
+			IDEX = IfId;
+			c_count++;
+			break;
 			
 		case lw:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
-			
-			return IfId;
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IDEX = IfId;
+			c_count++;
+			break;
 		
 		case sw:
+			//preserves the value of rt in rd
+			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rd = IfId.instruction.rt;
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
-
-			
-			return IfId;
+			IfId.instruction.rt = registers[IfId.instruction.rt];
+			IDEX = IfId;
+			c_count++;
+			break;
 			
 		case haltSimulation:
-			
-			return IfId;
+			IDEX = IfId;
+			break;
 			
 		case noop:
-			
-			return IfId;
+			IDEX = IfId;
+			c_count++;
+			break;
 		
 	}
 	
-
+	//printf("a");
+	
+	return c_count;
 }
 
 int EX(int n, int m){
