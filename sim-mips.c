@@ -562,7 +562,7 @@ struct buffer MEM(struct buffer ExeMem){
 	if(ExeMem.instruction.opcode == sw){
 		dataMemory[address] = ExeMem.instruction.rt;
 	}else if(ExeMem.instruction.opcode == lw){
-		dataMemory[address] = ExeMem.instruction.rt;
+		ExeMem.instruction.rt == dataMemory[address]; 
 	}
 
 	MEMWB = ExeMem;
