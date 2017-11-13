@@ -497,17 +497,49 @@ struct inst parser(char *input){
 	
 	//break up the inputString
     opcode = strtok(inputString, " ");
-	char* commandArgs[4];
+	//char* commandArgs[4];
+	//int argumentCount = 0;
+	
+	
+	//parse and extract arguments
+	char commandArgs[4][7];
 	int argumentCount = 0;
-
+	int trav = 0;
+	int column = 0;
+	int row = 0;
+	
+	while(input[trav] != '\0'){
+		if(input[trav] == ' '){
+			commandArgs[argumentCount][column] = '\0';
+			column = 0;
+			trav++;
+			argumentCount++;
+			continue;
+		}
+		commandArgs[argumentCount][column] = input[trav];
+		column++;
+		trav++;
+	}
+	commandArgs[argumentCount][column] = '\0';
+	argumentCount++;
+	
+	/*
+	int v = 0;
+	for (v = 0; v < argumentCount; v++){
+		printf("TEMPARGS[%s]\n",commandArgs[v]);
+		
+	}
+	*/
+	
 	//store arguments in commandArgs array and count arguments
-	while (opcode != NULL)
+	
+	/*while (opcode != NULL)
 	  {
 		commandArgs[argumentCount] = opcode;
-		printf ("[%s]\n",opcode);
+		//printf ("AA%s\n",opcode);
 		opcode = strtok(NULL, " ");
 		argumentCount++;
-	  }
+	  }*/
 	  
 	  
 	 int temp = 0;
@@ -834,7 +866,6 @@ struct inst parser(char *input){
 	 }
 	return output;
 }
-
 
 
 int IF(int c, int pgm_c, struct inst *instruct){
