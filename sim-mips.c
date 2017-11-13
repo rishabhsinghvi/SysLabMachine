@@ -237,7 +237,7 @@ char *progScannner(char *c){
 
 	char *ret; ret = (char *)malloc(strlen(c));
 	char t[2];
-	char space,open;
+	char space,open;open = 0;
 
 	int i;
 	for (i = 0; i < strlen(c); i++){
@@ -250,7 +250,7 @@ char *progScannner(char *c){
 
 			space = 0;
 		}else{
-			if(space == 0){
+			if(space == 0 && open==0){
 				t[0] = ' ';
 				t[1] = '\0';
 				str_cat(ret, t);
