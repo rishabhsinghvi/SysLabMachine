@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
+<<<<<<< HEAD
 //enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 /*
+=======
+enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
+
+>>>>>>> 8dabf7342f60dfe092b1a8e8db232299e33af73b
 struct inst
 {
     enum opcode opcode;
