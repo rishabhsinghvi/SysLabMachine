@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+<<<<<<< HEAD
 enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 
 struct inst
@@ -22,7 +23,9 @@ struct buffer
     long data;
 };
 
-int IF(int c, int pgm_c, struct inst instruct);  					//author: Noah,		tester: Aleksa , Done in testing
+int numLines(FILE* fp);
+struct inst *readFile(FILE* fp);
+int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
 struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
@@ -176,9 +179,28 @@ int WB_Test(){
 	return 0;
 }
 
+int numLines_test1(){
+	FILE *fp;fp = fopen("test1.txt", "r");
+
+
+	return numLines(fp) == 5;
+
+	fclose(fp);
+}
+
+int fileRead_test1(){
+	FILE *fp;
+	fp = fopen("./test1.txt", "r");
+	struct inst *file = readFile(fp);
+	struct inst test = {2, 1, 0, 10, 0};
+
+	return compare_instructions(file[0], test) == 0;
+	fclose(fp);
+}
+
 int progScanner_Test1(){
 
-	return strcmp(progScannner("add	$s0,,$s1         ,     $s2\n"), "add $s0 $s1 $s2") == 0;
+	return strcmp(progScannner("add	$s0,,$s1         ,     $s2"), "add $s0 $s1 $s2") == 0;
 }
 
 int progScanner_Test2(){
@@ -235,6 +257,12 @@ int parser_Test3(){
 	return compare_instructions(test, parser("beq 8 9 100"));
 }
 
+int final_parse_test1(){
+	struct inst test = {6, 8, 9, 0, 100};
+
+	return compare_instructions(test, parser(regNumberConverter(progScannner("lw $s0, 8($t0)"))));
+}
+
 int main(int argc, char const *argv[])
 {
 	printf("Example Test: %d\n\n", ExampleTest());
@@ -243,6 +271,8 @@ int main(int argc, char const *argv[])
 	printf("EX Test: %d\n\n", EX_Test());
 	printf("MEM Test: %d\n\n", MEM_Test());
 	printf("WB Test: %d\n\n", WB_Test());
+	printf("Number of Lines Test 1: %d\n\n", numLines_test1());
+	printf("File Reader Test 1: %d\n\n", fileRead_test1());
 	printf("Program Scanner Test 1: %d\n\n", progScanner_Test1());
 	printf("Program Scanner Test 2: %d\n\n", progScanner_Test2());
 	printf("Program Scanner Test 3: %d\n\n", progScanner_Test3());
