@@ -227,8 +227,8 @@ char *progScannner(char *c){
 	char t[2];
 	char space,open;
 
-	
-	for (int i = 0; i < strlen(c); i++){
+	int i;
+	for (i = 0; i < strlen(c); i++){
 
 
 		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9') || c[i] == '$'){
@@ -465,44 +465,361 @@ char *regNumberConverter(char *prog){
 
 struct inst parser(char *input){
 
-		struct inst output;
+	
 
+	struct inst output;
+	char* opcode; 
+	
 	char delimeter[] = " ";
-	char *opcode = strtok(input, delimeter);
-    int i;
-	for(i=0; i<9; i++){
-		if(i==9){
-			printf("Ooop! Something was entered-in incorrectly!");
-            output.opcode = haltSimulation;
-            HALT_SIMULATION = 1;
-            return output;
-		}
-		if (strcmp(correctOpcode[i],opcode)==0){
-            output.opcode = i;
-		}
+	char inputString[strlen(input)+1];
+	
+	inputString[strlen(input)+1] = '\0';
+	
+	int l = 0;
+	
+	//copy input into inputString
+	while (input[l] != '\0'){
+		inputString[l]=input[l];
+		l++;
 	}
-	if(i == 8){  //halt program command detected
-		return output;
-	}
-	if(i == 0 || i == 2 || i == 3){
-		output.rs = atoi(strtok(NULL, delimeter));  //saving rs value
-		output.rt = atoi(strtok(NULL, delimeter));  //saving rt value
-		output.rd = atoi(strtok(NULL, delimeter));  //saving rd value
-	}
-	else{
-		output.rs = atoi(strtok(NULL, delimeter));
-		output.rt = atoi(strtok(NULL, delimeter));
-        int immidiate = atoi(strtok(NULL, delimeter));
-		if(immidiate>=65536){
-			printf("Ooop! Something was entered-in incorrectly!");
-            output.opcode = haltSimulation;
-            output.Imm = 0;
-            return output;
-		}
-        output.Imm = immidiate;
-	}
+	
+	//break up the inputString
+    opcode = strtok(inputString, " ");
+	char* commandArgs[3];
+	int argumentCount = 0;
 
-
+	//store arguments in commandArgs array and count arguments
+	while (opcode != NULL)
+	  {
+		commandArgs[argumentCount] = opcode;
+		//printf ("%s\n",opcode);
+		opcode = strtok(NULL, " ");
+		argumentCount++;
+	  }
+	  
+	  
+	 int temp = 0;
+	 if (!strcmp("add",commandArgs[0])){
+		 output.opcode = add;
+		if(argumentCount != 4){
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 
+		 //rs
+		 if (!strcmp("0",commandArgs[1])){
+			 output.rs = 0;
+		 }
+		 else{
+			 output.rs = atoi(commandArgs[1]);
+		 }
+		 //rt
+		 if (!strcmp("0",commandArgs[2])){
+			 output.rt = 0;
+		 }
+		 else{
+			 output.rt = atoi(commandArgs[2]);
+		 }
+		 
+		 //rd
+		 if (!strcmp("0",commandArgs[3])){
+			 output.rd = 0;
+		 }
+		 else{
+			 output.rd = atoi(commandArgs[3]);
+		 }
+		 output.Imm = 0;
+		 return output;
+	 }
+	 
+	 else if (!strcmp("sub",commandArgs[0])){
+		 output.opcode = sub;
+		 if(argumentCount != 4){
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 
+		 //rs
+		 if (!strcmp("0",commandArgs[1])){
+			 output.rs = 0;
+		 }
+		 else{
+			 output.rs = atoi(commandArgs[1]);
+		 }
+		 //rt
+		 if (!strcmp("0",commandArgs[2])){
+			 output.rt = 0;
+		 }
+		 else{
+			 output.rt = atoi(commandArgs[2]);
+		 }
+		 
+		 //rd
+		 if (!strcmp("0",commandArgs[3])){
+			 output.rd = 0;
+		 }
+		 else{
+			 output.rd = atoi(commandArgs[3]);
+		 }
+		 output.Imm = 0;
+		 return output;
+	 }
+	 else if (!strcmp("addi",commandArgs[0])){
+		 output.opcode = addi;
+		 if(argumentCount != 4){
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 
+		 //rs
+		 if (!strcmp("0",commandArgs[1])){
+			 output.rs = 0;
+		 }
+		 else{
+			 output.rs = atoi(commandArgs[1]);
+		 }
+		 //rt
+		 if (!strcmp("0",commandArgs[2])){
+			 output.rt = 0;
+		 }
+		 else{
+			 output.rt = atoi(commandArgs[2]);
+		 }
+		 
+		 //Imm
+		 if (!strcmp("0",commandArgs[3])){
+			 output.Imm = 0;
+		 }
+		 else{
+			 
+			 if(65536 <= (unsigned)atoi(commandArgs[3])){
+				 printf("ERROR: IMMEDIATE VALUE TOO LARGE\n");
+				 exit(0);
+			 }
+			 output.Imm = atoi(commandArgs[3]);
+		 }
+		 
+		 output.rd = 0;
+		 
+		 return output;
+	 }
+	 else if (!strcmp("mul",commandArgs[0])){
+		 output.opcode = mult;
+		 if(argumentCount != 4){
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 
+		 //rs
+		 if (!strcmp("0",commandArgs[1])){
+			 output.rs = 0;
+		 }
+		 else{
+			 output.rs = atoi(commandArgs[1]);
+		 }
+		 //rt
+		 if (!strcmp("0",commandArgs[2])){
+			 output.rt = 0;
+		 }
+		 else{
+			 output.rt = atoi(commandArgs[2]);
+		 }
+		 
+		 //rd
+		 if (!strcmp("0",commandArgs[3])){
+			 output.rd = 0;
+		 }
+		 else{
+			 output.rd = atoi(commandArgs[3]);
+		 }
+		 
+		 //Imm
+		 output.Imm = 0;
+		 return output;
+		 
+		 
+	 }
+	 else if (!strcmp("lw",commandArgs[0])){
+		 output.opcode = lw;
+		 if(argumentCount == 4){
+			 
+					//rs
+					 if (!strcmp("0",commandArgs[1])){
+						 output.rs = 0;
+					 }
+					 else{
+						 output.rs = atoi(commandArgs[1]);
+					 }
+					 //rt
+					 if (!strcmp("0",commandArgs[3])){
+						 output.rt = 0;
+					 }
+					 else{
+						 output.rt = atoi(commandArgs[3]);
+					 }
+					 
+					 //Imm
+					 if (!strcmp("0",commandArgs[2])){
+						 output.Imm = 0;
+					 }
+					 else{
+						 
+						 if(65536 <= (unsigned)atoi(commandArgs[2])){
+							 printf("ERROR: IMMEDIATE VALUE TOO LARGE\n");
+							 exit(0);
+						 }
+						 output.Imm = atoi(commandArgs[2]);
+					 }
+					 
+					 output.rd = 0;
+						 
+		 }
+		 else if(argumentCount == 3){
+					//rs
+				 if (!strcmp("0",commandArgs[1])){
+					 output.rs = 0;
+				 }
+				 else{
+					 output.rs = atoi(commandArgs[1]);
+				 }
+				 //rt
+				 if (!strcmp("0",commandArgs[2])){
+					 output.rt = 0;
+				 }
+				 else{
+					 output.rt = atoi(commandArgs[2]);
+				 }
+				 output.rd = 0;
+				 output.Imm = 0;
+		 }
+		 else{
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 return output;
+	 }
+	 else if (!strcmp("sw",commandArgs[0])){
+		 output.opcode = sw;
+		 if(argumentCount == 4){
+			 
+					//rs
+					 if (!strcmp("0",commandArgs[1])){
+						 output.rs = 0;
+					 }
+					 else{
+						 output.rs = atoi(commandArgs[1]);
+					 }
+					 //rt
+					 if (!strcmp("0",commandArgs[3])){
+						 output.rt = 0;
+					 }
+					 else{
+						 output.rt = atoi(commandArgs[3]);
+					 }
+					 
+					 //Imm
+					 if (!strcmp("0",commandArgs[2])){
+						 output.Imm = 0;
+					 }
+					 else{
+						 
+						 if(65536 <= (unsigned)atoi(commandArgs[2])){
+							 printf("ERROR: IMMEDIATE VALUE TOO LARGE\n");
+							 exit(0);
+						 }
+						 output.Imm = atoi(commandArgs[2]);
+					 }
+					 
+					 output.rd = 0;
+						 
+		 }
+		 else if(argumentCount == 3){
+					//rs
+				 if (!strcmp("0",commandArgs[1])){
+					 output.rs = 0;
+				 }
+				 else{
+					 output.rs = atoi(commandArgs[1]);
+				 }
+				 //rt
+				 if (!strcmp("0",commandArgs[2])){
+					 output.rt = 0;
+				 }
+				 else{
+					 output.rt = atoi(commandArgs[2]);
+				 }
+				 output.rd = 0;
+				 output.Imm = 0;
+		 }
+		 else{
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 return output;
+	 }
+	 else if (!strcmp("beq",commandArgs[0])){
+		 output.opcode = beq;
+		 
+		 if(argumentCount != 4){
+			 printf("ERROR: WRONG NUMBER OF ARGUMENTS\n");
+			 exit(0);
+		 }
+		 
+		 //rs
+		 if (!strcmp("0",commandArgs[1])){
+			 output.rs = 0;
+		 }
+		 else{
+			 output.rs = atoi(commandArgs[1]);
+		 }
+		 //rt
+		 if (!strcmp("0",commandArgs[2])){
+			 output.rt = 0;
+		 }
+		 else{
+			 output.rt = atoi(commandArgs[2]);
+		 }
+		 
+		 //Imm
+		 if (!strcmp("0",commandArgs[3])){
+			 output.Imm = 0;
+		 }
+		 else{
+			 
+			 if(65536 <= (unsigned)atoi(commandArgs[3])){
+				 printf("ERROR: IMMEDIATE VALUE TOO LARGE\n");
+				 exit(0);
+			 }
+			 output.Imm = atoi(commandArgs[3]);
+		 }
+		 
+		 output.rd = 0;
+		 
+		 return output;
+	 }
+	 else if (!strcmp("nop",commandArgs[0])){
+		 output.opcode = noop;
+		 output.rs = 0;
+		 output.rd = 0;
+		 output.rt = 0;
+		 output.Imm = 0;
+		 return output;
+	 }
+	 else if (!strcmp("haltSimulation",commandArgs[0])){
+		 output.opcode = haltSimulation;
+		 output.rs = 0;
+		 output.rd = 0;
+		 output.rt = 0;
+		 output.Imm = 0;
+		 
+		 //DO WHAT
+		 return output;
+	 }
+	 else{
+		//ILLEGAL OPCODE DETECTED
+		printf("ERROR: ILLEGAL OPCODE DETECTED\n");
+		exit(0);
+	 }
 	return output;
 }
 
