@@ -1,31 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-//enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
-/*
-=======
-enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
-
->>>>>>> 8dabf7342f60dfe092b1a8e8db232299e33af73b
-struct inst
-{
-    enum opcode opcode;
-    long rs;
-    long rt;
-    int rd;
-    int Imm;
-};
-
-struct buffer
-{
-    struct inst instruction;
-    int readyToRead;
-    int readytoWrite;
-    int address;
-    int wbReg;
-    long data;
-};
-*/
 
 int numLines(FILE* fp);
 struct inst *readFile(FILE* fp);
@@ -215,15 +190,14 @@ int WB_Test(){
 
 
 int numLines_test1(){
-	/*
+	
 	FILE *fp;fp = fopen("test1.txt", "r");
 
 
 	return numLines(fp) == 5;
 
 	fclose(fp);
-	*/
-	return 0;
+	
 }
 
 
@@ -315,7 +289,7 @@ int parser_Test3(){
 	struct inst peter = parser(line);
 	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
-	return compare_instructions(test, parser("beq 8 9 100"));
+	return compare_instructions(test, peter);
 }
 
 int parser_Test4(){
@@ -334,8 +308,9 @@ int parser_Test4(){
 int parser_Test5(){
 	struct inst test = {sub, 16, 17, 18, 0};
 
+	printf("%s\n", progScannner("sub $s0, $s1, $s2"));
 	char *line = regNumberConverter(progScannner("sub $s0, $s1, $s2"));
-	//printf("%s\n", line);
+	printf("%s\n", line);
 
 	struct inst peter = parser(line);
 	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);

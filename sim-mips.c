@@ -523,13 +523,13 @@ struct inst parser(char *input){
 	commandArgs[argumentCount][column] = '\0';
 	argumentCount++;
 	
-	/*
+	
 	int v = 0;
 	for (v = 0; v < argumentCount; v++){
 		printf("TEMPARGS[%s]\n",commandArgs[v]);
 		
 	}
-	*/
+	
 	
 	//store arguments in commandArgs array and count arguments
 	
