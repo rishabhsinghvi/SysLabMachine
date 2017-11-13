@@ -279,7 +279,7 @@ int parser_Test2(){
 
 	struct inst peter = parser("lw 17 4 18");
 
-	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 	return compare_instructions(test, peter);
 }
@@ -288,10 +288,10 @@ int parser_Test3(){
 	struct inst test = {beq, 8, 9, 0, 100};
 
 	char *line = regNumberConverter("beq 8 9 100");
-	//printf("%s\n", line);
+	printf("%s\n", line);
 
 	struct inst peter = parser(line);
-	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 	return compare_instructions(test, peter);
 }
@@ -300,10 +300,10 @@ int parser_Test4(){
 	struct inst test = {lw, 16, 8, 0, 8};
 
 	char *line = regNumberConverter(progScannner("lw $s0 8 $t0"));
-	//printf("%s\n", line);
+	printf("%s\n", line);
 
 	struct inst peter = parser(regNumberConverter("lw $s0 8 $t0"));
-	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -312,12 +312,12 @@ int parser_Test4(){
 int parser_Test5(){
 	struct inst test = {sub, 16, 17, 18, 0};
 
-	//printf("%s\n", progScannner("sub $s0, $s1, $s2"));
+	printf("%s\n", progScannner("sub $s0, $s1, $s2"));
 	char *line = regNumberConverter(progScannner("sub $s0, $s1, $s2"));
-	//printf("%s\n", line);
+	printf("%s\n", line);
 
 	struct inst peter = parser(line);
-	////printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -326,13 +326,13 @@ int parser_Test5(){
 int parser_Test6(){
 	struct inst test = {sub, 18, 19, 20, 0};
 
-	//printf("%s\n", progScannner("sub $s2, $s3, $s4"));
+	printf("%s\n", progScannner("sub $s2, $s3, $s4"));
 	char *line = regNumberConverter(progScannner("sub $s2, $s3, $s4"));
-	//printf("%s\n", line);
+	printf("%s\n", line);
 
 
 	struct inst peter = parser(line);
-	////printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	//printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -341,9 +341,9 @@ int parser_Test6(){
 int parser_Test7(){
 	struct inst test = {lw, 16, 8, 0, 8};
 
-	//printf("%s\n", progScannner("lw $s0, 8($t0)"));
+	printf("%s\n", progScannner("lw $s0, 8($t0)"));
 	char *line = regNumberConverter(progScannner("lw $s0, 8($t0)"));
-	//printf("[%s]\n", line);
+	printf("[%s]\n", line);
 
 
 	struct inst peter = parser(line);
