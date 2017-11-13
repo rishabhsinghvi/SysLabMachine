@@ -1,6 +1,27 @@
 #include <stdio.h>
 #include <string.h>
 
+enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
+
+struct inst
+{
+    enum opcode opcode;
+    long rs;
+    long rt;
+    int rd;
+    int Imm;
+};
+
+struct buffer
+{
+    struct inst instruction;
+    int readyToRead;
+    int readytoWrite;
+    int address;
+    int wbReg;
+    long data;
+};
+
 int IF(int c, int pgm_c, struct inst instruct);  					//author: Noah,		tester: Aleksa , Done in testing
 struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
@@ -16,16 +37,6 @@ struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 	by running the $make command which will create a sim-test and 
 	sim-mips executable (hopefully works for windows, mac and linux)
 */
-enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
-
-struct inst
-{
-	enum opcode opcode;
-	long rs;
-	long rt;
-	int rd;
-	int Imm;
-};
 
 int compare_instructions(struct inst a, struct inst b){
 	if((a.opcode == b.opcode) && (a.rs == b.rs) && (a.rt == b.rt) && (a.rd == b.rd) && (a.Imm == b.Imm)){
@@ -44,6 +55,85 @@ int IF_Test(){
 }
 
 int ID_Test(){
+    struct buffer input;
+    long* reg_file = {88,188,288,388,488,588,688,788,888,988,1088,1188,1288,1388,1488,1588,1688,1788,1888,1988,2088,2188,2288,2388,2488,2588,2688,2788,2888,2988,3088,3188};
+    //addition case
+    input.instruction.opcode = 0;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.rd = 24;
+    struct buffer output;
+    output = ID(reg_file, input);
+    
+    int result = reg_file[2] - output.instruction.rs;
+    result = result + (reg_file[4] - output.instruction.rt);
+    result = result + (24 - output.instruction.rd);
+    
+    //subtration case
+    input.instruction.opcode = 2;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.rd = 24;
+    output = ID(reg_file, input);
+    
+    result = result + (reg_file[2] - output.instruction.rs);
+    result = result + (reg_file[4] - output.instruction.rt);
+    result = result + (24 - output.instruction.rd);
+    
+    //multiplication case
+    input.instruction.opcode = 3;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.rd = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (reg_file[4] - output.instruction.rt);
+    result = result + (24 - output.instruction.rd);
+    
+    //addi case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.Imm = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+    //beq case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+    //lw case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.Imm = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+    //sw case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.Imm = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
 	return 0;
 }
 /*

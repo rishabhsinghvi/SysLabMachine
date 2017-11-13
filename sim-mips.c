@@ -519,47 +519,47 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 		case addi:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case sub:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case mult:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case beq:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+            IDEX = IfId;
 			return IfId;
 			
 		case lw:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 		
 		case sw:
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-
+            IDEX = IfId;
 			
 			return IfId;
 			
 		case haltSimulation:
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case noop:
-			
+			IDEX = IfId;
 			return IfId;
 		
 	}
@@ -641,6 +641,7 @@ int EX(int n, int m){
             return m;
             
         }
+    return 0;
 }
 
 //takes previous buffer and return the total cycles taken so far
