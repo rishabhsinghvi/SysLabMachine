@@ -137,7 +137,7 @@ int ID_Test(){
     result = result + (2 - output.instruction.rt);
     result = result + (24 - output.instruction.Imm);
     
-	return 0;
+	return result;
 }
 /*
 int EX_Test_Add(){
@@ -176,7 +176,19 @@ int MEM_Test(){
 }
 
 int WB_Test(){
-	return 0;
+    struct buffer input;
+    int result;
+    long* reg_file = {88,188,288,388,488,588,688,788,888,988,1088,1188,1288,1388,1488,1588,1688,1788,1888,1988,2088,2188,2288,2388,2488,2588,2688,2788,2888,2988,3088,3188};
+    input.instruction.opcode = add;
+    input.data = 88;
+    for(int i=0;i<32;i++){
+        input.wbReg = i;
+        int count = WB(0,reg_file,input);
+    }
+    for(int i=0;i<32;i++){
+        result = result + reg_file[i]-88;
+    }
+	return result;
 }
 
 int numLines_test1(){
