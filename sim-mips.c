@@ -59,8 +59,9 @@ struct buffer MEMWB;
 struct inst *IM;  //can we get an intruction count and do malloc later to get exact size?
 
 
-
-int IF(int c, int pgm_c, struct inst instruct);  					//author: Noah,		tester: Aleksa , Done in testing
+int numLines(FILE* fp);
+struct inst *readFile(FILE* fp);
+int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
 struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
@@ -84,6 +85,33 @@ int str_comp(char str1[], char str2[]){
 		return 0;
 	else
 		return -1;
+}
+
+int numLines(FILE* fp){
+	int lines, ch;lines = 0;
+
+	do{
+		ch = fgetc(fp);
+		if(ch == '\n')
+			lines++;
+	}while(ch != EOF);
+
+	if(ch != '\n' && lines != 0)
+		lines++;
+	return lines;
+}
+
+struct inst *readFile(FILE* fp){
+	int lines = numLines(fp);
+	struct inst *instructions; instructions = (struct inst*)malloc(lines*sizeof(struct inst));
+	char* line;int c; c = 0;
+
+	while(fgets(line, 100, fp)){
+		size_t len = strlen(line);
+
+		instructions[c] = parser(regNumberConverter(progScannner(line)));
+
+	}
 }
 
 
@@ -150,16 +178,16 @@ int main (int argc, char *argv[]){
 	
 
 	//start your code from here
-	char *line;struct inst INSTRUCT;
+	struct inst *Inst_Mem;
+	Inst_Mem = readFile(input);
 
-	while(fgets(line, 100, input)){ // reading file, we have to execute it line by line because we can't initalize an array at run time the same size as the number of lines in the file
-		size_t len = strlen(line);
-		INSTRUCT = parser(regNumberConverter(progScannner(line)));
-
+	while(!HALT_SIMULATION){
 
 
 
-		sim_cycle = sim_cycle + IF(c, pgm_c, INSTRUCT);
+
+
+		sim_cycle = sim_cycle + IF(c, pgm_c, Inst_Mem);
 		if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0))
 		//pgm_c = pgm_c -1;
 		IDEX = ID(mips_reg, IFID);
@@ -480,7 +508,7 @@ struct inst parser(char *input){
 
 
 
-int IF(int c, int pgm_c, struct inst instruct){
+int IF(int c, int pgm_c, struct inst *instruct){
         if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){//instroduce noop to the system
             struct inst toBuffer;
             toBuffer.opcode = noop;
@@ -491,7 +519,7 @@ int IF(int c, int pgm_c, struct inst instruct){
         if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
             return c;
         }
-        IFID.instruction = instruct;
+        IFID.instruction = instruct[pgm_c];
         IFID.readyToRead = 1;
         IFCTDN = 1;
     IFCTDN = IFCTDN + c;
@@ -517,6 +545,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 			IDEX = IfId;
 			return IfId;
 		case addi:
+			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			
@@ -678,6 +707,10 @@ int WB(int cycles_count, long *registers, struct buffer MemWb){
 
 		WB_cycle_count++;
 		cycles_count++;
+	}
+
+	if(MemWb.instruction.opcode == haltSimulation){
+		HALT_SIMULATION = 1;
 	}
 
 
