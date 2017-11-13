@@ -60,8 +60,8 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 
 
 
-int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
-struct buffer ID(struct buffer IfId);								//author: Aleksa,	tester: Noah, 
+int IF(int c, int pgm_c, struct inst instruct);  					//author: Noah,		tester: Aleksa , Done in testing
+struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
@@ -95,6 +95,7 @@ int main (int argc, char *argv[]){
 	long pgm_c=0;//program counter
 	long sim_cycle=0;//simulation cycle counter
 	//define your own counter for the usage of each pipeline stage here
+
 
 
 
@@ -149,16 +150,34 @@ int main (int argc, char *argv[]){
 	
 
 	//start your code from here
-	while(HALT_SIMULATION==0){
-		sim_cycle = sim_cycle + IF(c);
-		if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){
-		pgm_c = pgm_c -1;
-		struct buffer theBuffer = ID(IFID,1,*mips_reg);
+	char *line;struct inst INSTRUCT;
+
+	while(fgets(line, 100, input)){ // reading file, we have to execute it line by line because we can't initalize an array at run time the same size as the number of lines in the file
+		size_t len = strlen(line);
+		INSTRUCT = parser(regNumberConverter(progScannner(line)));
+
+
+
+
+		sim_cycle = sim_cycle + IF(c, pgm_c, INSTRUCT);
+		if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0))
+		//pgm_c = pgm_c -1;
+		IDEX = ID(mips_reg, IFID);
 		sim_cycle++;
 		sim_cycle = sim_cycle + EX(n,m);
 		sim_cycle = sim_cycle + MEM(sim_cycle,c,EXMEM);
-		sim_cycle = sim_cycle + WB(1,*mips_reg,MEMWB);
+		sim_cycle = sim_cycle + WB(1,mips_reg,MEMWB);
+
+
 	}
+
+
+
+
+
+ 
+
+
 
 	double iftime = (100*IFCTDN)/sim_cycle;
 	double idtime = (100*IDCTDN)/sim_cycle;
@@ -166,9 +185,9 @@ int main (int argc, char *argv[]){
 	double memtime = (100*MEM_cycle_count)/sim_cycle;
 	double wbtime = (100*WB_cycle_count)/sim_cycle;
 
-	printf("The percetage of time used by IF: %d \nThe percetage of time used by ID: %d \nThe percetage of time used by EX: %d \nThe percetage of time used by MEM: %d \nThe percetage of time used by WB: %d \n", iftime, idtime, extime, memtime, wbtime);
+	printf("The percetage of time used by IF: %f \nThe percetage of time used by ID: %f \nThe percetage of time used by EX: %f \nThe percetage of time used by MEM: %f \nThe percetage of time used by WB: %f \n", iftime, idtime, extime, memtime, wbtime);
 
-	}
+	
 
 
 }
@@ -461,7 +480,7 @@ struct inst parser(char *input){
 
 
 
-int IF(int c, int pgm_c){
+int IF(int c, int pgm_c, struct inst instruct){
         if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){//instroduce noop to the system
             struct inst toBuffer;
             toBuffer.opcode = noop;
@@ -472,7 +491,7 @@ int IF(int c, int pgm_c){
         if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
             return c;
         }
-        IFID.instruction = IM[pgm_c];
+        IFID.instruction = instruct;
         IFID.readyToRead = 1;
         IFCTDN = 1;
     IFCTDN = IFCTDN + c;
@@ -480,7 +499,7 @@ int IF(int c, int pgm_c){
     return c;
 }
 
-struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+struct buffer ID(long *registers, struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
 	if(IfId.readyToRead == 0){
 		//not ready to read
 		return IDEX;
@@ -493,44 +512,44 @@ struct buffer ID(struct buffer IfId){  //please make sure that if opcode is 'hal
 	
 	switch(IfId.instruction.opcode){
 		case add:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
 			return IfId;
 		case addi:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			
 			return IfId;
 			
 		case sub:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			
 			return IfId;
 			
 		case mult:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			
 			return IfId;
 			
 		case beq:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			
 			return IfId;
 			
 		case lw:
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 			
 			return IfId;
 		
 		case sw:
 			IfId.instruction.rd = IfId.instruction.rt;
-			IfId.instruction.rs = mips_reg[IfId.instruction.rs];
-			IfId.instruction.rt = mips_reg[IfId.instruction.rt];
+			IfId.instruction.rs = registers[IfId.instruction.rs];
+			IfId.instruction.rt = registers[IfId.instruction.rt];
 
 			
 			return IfId;

@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 
-void IF(void);  							//author: Noah,		tester: Aleksa
-void ID(void);						//author: Aleksa,	tester: Noah
-void EX(void);								//author: Noah,		tester: Aleksa, Peter
-void MEM(void);								//author: Peter,	tester: Aleksa
-void WB(void);								//author: Aleksa,	tester: Noah
-char *progScannner(char *c); 				//author: Peter,	tester: Noah,  Done and tested
-char *regNumberConverter(char *prog);		//author: Aleksa,	tester:	Peter
-struct inst parser(char *input);			//author: Noah,		tester: Peter
+int IF(int c, int pgm_c, struct inst instruct);  					//author: Noah,		tester: Aleksa , Done in testing
+struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
+int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
+int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
+int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
+char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
+char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
+struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
+//main  									//author: Peter
 
 /*
 	To run this testing file compile the project using the makefile 
@@ -45,7 +46,7 @@ int IF_Test(){
 int ID_Test(){
 	return 0;
 }
-
+/*
 int EX_Test_Add(){
 	//addition test
 		IDEX.instruction.opcode = 0;
@@ -71,6 +72,11 @@ int EX_Test_Addi(){
 	IDEX.instruction.opcode = 2;
 	
 }
+*/
+
+int EX_Test(){
+	return 0;
+}
 
 int MEM_Test(){
 	return 0;
@@ -82,7 +88,7 @@ int WB_Test(){
 
 int progScanner_Test1(){
 
-	return strcmp(progScannner("add	$s0,,$s1         ,     $s2"), "add $s0 $s1 $s2") == 0;
+	return strcmp(progScannner("add	$s0,,$s1         ,     $s2\n"), "add $s0 $s1 $s2") == 0;
 }
 
 int progScanner_Test2(){
