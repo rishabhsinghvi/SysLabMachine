@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-<<<<<<< HEAD
 enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 
 struct inst
