@@ -191,9 +191,9 @@ int WB_Test(){
 
 int numLines_test1(){
 	
-	FILE *fp;fp = fopen("test1.txt", "+r");
+	FILE *fp;fp = fopen("test1.txt", "r");
 
-
+	//printf("%s\n", "here");
 	return numLines(fp) == 5;
 
 	fclose(fp);
