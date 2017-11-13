@@ -215,12 +215,15 @@ int WB_Test(){
 
 
 int numLines_test1(){
+	/*
 	FILE *fp;fp = fopen("test1.txt", "r");
 
 
 	return numLines(fp) == 5;
 
 	fclose(fp);
+	*/
+	return 0;
 }
 
 
