@@ -116,15 +116,19 @@ int numLines(FILE* fp){
 }
 
 struct inst *readFile(FILE* fp){
-	int lines = numLines(fp);
+	FILE *fp2;fp2 = fp;
+	int lines = numLines(fp2);
 	struct inst *instructions; instructions = (struct inst*)malloc(lines*sizeof(struct inst));
-	char* line;int c; c = 0;
+	char line[100];int c; c = 0;
+
+	printf("%s\n", "initialize structs");
 
 	while(fgets(line, 100, fp)){
 		size_t len = strlen(line);
+		printf("%s\n", line);
 
-		instructions[c] = parser(regNumberConverter(progScannner(line)));
-
+		instructions[c] = parser(regNumberConverter(progScannner(line[len-1])));
+		c++;
 	}
 }
 
@@ -525,12 +529,13 @@ struct inst parser(char *input){
 	commandArgs[argumentCount][column] = '\0';
 	argumentCount++;
 	
-	
+	/*
 	int v = 0;
 	for (v = 0; v < argumentCount; v++){
 		printf("TEMPARGS[%s]\n",commandArgs[v]);
 		
 	}
+	*/
 	
 	
 	//store arguments in commandArgs array and count arguments

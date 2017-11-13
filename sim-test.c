@@ -203,14 +203,19 @@ int numLines_test1(){
 int fileRead_test1(){
 	/*
 	FILE *fp;
-	fp = fopen("./test1.txt", "r");
-	struct inst *file = readFile(fp);
+	fp = fopen("test1.txt", "r");
+	FILE *fp2;fp2 = fp;
+
+	printf("%s\t%d\n", "open file", numLines(fp2));
+
+	struct inst *fileC = readFile(fp);
 	struct inst test = {2, 1, 0, 10, 0};
 
-	return compare_instructions(file[0], test) == 0;
+	return compare_instructions(fileC[0], test) == 0;
 	fclose(fp);
 	*/
 	return 0;
+	
 }
 
 int progScanner_Test1(){
@@ -307,12 +312,12 @@ int parser_Test4(){
 int parser_Test5(){
 	struct inst test = {sub, 16, 17, 18, 0};
 
-	printf("%s\n", progScannner("sub $s0, $s1, $s2"));
+	//printf("%s\n", progScannner("sub $s0, $s1, $s2"));
 	char *line = regNumberConverter(progScannner("sub $s0, $s1, $s2"));
-	printf("%s\n", line);
+	//printf("%s\n", line);
 
 	struct inst peter = parser(line);
-	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	////printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -321,13 +326,13 @@ int parser_Test5(){
 int parser_Test6(){
 	struct inst test = {sub, 18, 19, 20, 0};
 
-	printf("%s\n", progScannner("sub $s2, $s3, $s4"));
+	//printf("%s\n", progScannner("sub $s2, $s3, $s4"));
 	char *line = regNumberConverter(progScannner("sub $s2, $s3, $s4"));
-	printf("%s\n", line);
+	//printf("%s\n", line);
 
 
 	struct inst peter = parser(line);
-	//printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	////printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -336,9 +341,9 @@ int parser_Test6(){
 int parser_Test7(){
 	struct inst test = {lw, 16, 8, 0, 8};
 
-	printf("%s\n", progScannner("lw $s0, 8($t0)"));
+	//printf("%s\n", progScannner("lw $s0, 8($t0)"));
 	char *line = regNumberConverter(progScannner("lw $s0, 8($t0)"));
-	printf("[%s]\n", line);
+	//printf("[%s]\n", line);
 
 
 	struct inst peter = parser(line);
