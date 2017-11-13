@@ -497,7 +497,7 @@ struct inst parser(char *input){
 	
 	//break up the inputString
     opcode = strtok(inputString, " ");
-	char* commandArgs[3];
+	char* commandArgs[4];
 	int argumentCount = 0;
 
 	//store arguments in commandArgs array and count arguments
