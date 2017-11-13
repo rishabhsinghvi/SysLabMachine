@@ -193,7 +193,7 @@ int numLines_test1(){
 	
 	FILE *fp;fp = fopen("test1.txt", "r");
 
-	printf("%s\n", "open file");
+	//printf("%s\n", "open file");
 	return numLines(fp) == 5;
 
 	fclose(fp);	
