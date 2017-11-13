@@ -104,7 +104,8 @@ int numLines(FILE* fp){
 
 	do{
 		ch = fgetc(fp);
-		printf("%c\n", ch);
+
+
 		if(ch == '\n')
 			lines++;
 	}while(ch != EOF);
