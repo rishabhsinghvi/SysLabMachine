@@ -60,6 +60,7 @@ struct inst *IM;  //can we get an intruction count and do malloc later to get ex
 
 
 int numLines(FILE* fp);
+char *str_cat(char *dest, const char *src);
 struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
 struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
@@ -71,6 +72,17 @@ char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
+
+
+char *str_cat(char *dest, const char *src){
+    size_t i,j;
+    for (i = 0; dest[i] != '\0'; i++)
+        ;
+    for (j = 0; src[j] != '\0'; j++)
+        dest[i+j] = src[j];
+    dest[i+j] = '\0';
+    return dest;
+}
 
 int str_comp(char str1[], char str2[]){
 	int ctr=0;
@@ -234,14 +246,14 @@ char *progScannner(char *c){
 		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9') || c[i] == '$'){
 			t[0] = c[i];
 			t[1] = '\0';
-			strcat(ret, t);
+			str_cat(ret, t);
 
 			space = 0;
 		}else{
 			if(space == 0){
 				t[0] = ' ';
 				t[1] = '\0';
-				strcat(ret, t);
+				str_cat(ret, t);
 			}
 
 			space = 1;
@@ -492,7 +504,7 @@ struct inst parser(char *input){
 	while (opcode != NULL)
 	  {
 		commandArgs[argumentCount] = opcode;
-		//printf ("%s\n",opcode);
+		printf ("[%s]\n",opcode);
 		opcode = strtok(NULL, " ");
 		argumentCount++;
 	  }
@@ -865,47 +877,47 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case sub:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case mult:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case beq:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+            IDEX = IfId;
 			return IfId;
 			
 		case lw:
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-			
+			IDEX = IfId;
 			return IfId;
 		
 		case sw:
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
-
+            IDEX = IfId;
 			
 			return IfId;
 			
 		case haltSimulation:
-			
+			IDEX = IfId;
 			return IfId;
 			
 		case noop:
-			
+			IDEX = IfId;
 			return IfId;
 		
 	}
@@ -987,6 +999,7 @@ int EX(int n, int m){
             return m;
             
         }
+    return 0;
 }
 
 //takes previous buffer and return the total cycles taken so far

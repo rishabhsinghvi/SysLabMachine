@@ -1,6 +1,28 @@
 #include <stdio.h>
 #include <string.h>
 
+//enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
+/*
+struct inst
+{
+    enum opcode opcode;
+    long rs;
+    long rt;
+    int rd;
+    int Imm;
+};
+
+struct buffer
+{
+    struct inst instruction;
+    int readyToRead;
+    int readytoWrite;
+    int address;
+    int wbReg;
+    long data;
+};
+*/
+
 int numLines(FILE* fp);
 struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
@@ -14,6 +36,7 @@ struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
 
+
 enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 
 struct inst
@@ -24,6 +47,7 @@ struct inst
 	int rd;
 	int Imm;
 };
+
 
 int compare_instructions(struct inst a, struct inst b){
 	if((a.opcode == b.opcode) && (a.rs == b.rs) && (a.rt == b.rt) && (a.rd == b.rd) && (a.Imm == b.Imm)){
@@ -44,6 +68,91 @@ int IF_Test(){
 int ID_Test(){
 	return 0;
 }
+
+/*
+int ID_Test(){
+    struct buffer input;
+    long* reg_file = {88,188,288,388,488,588,688,788,888,988,1088,1188,1288,1388,1488,1588,1688,1788,1888,1988,2088,2188,2288,2388,2488,2588,2688,2788,2888,2988,3088,3188};
+    //addition case
+    input.instruction.opcode = 0;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.rd = 24;
+    struct buffer output;
+    output = ID(reg_file, input);
+    
+    int result = reg_file[2] - output.instruction.rs;
+    result = result + (reg_file[4] - output.instruction.rt);
+    result = result + (24 - output.instruction.rd);
+    
+    //subtration case
+    input.instruction.opcode = 2;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.rd = 24;
+    output = ID(reg_file, input);
+    
+    result = result + (reg_file[2] - output.instruction.rs);
+    result = result + (reg_file[4] - output.instruction.rt);
+    result = result + (24 - output.instruction.rd);
+    
+    //multiplication case
+    input.instruction.opcode = 3;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.rd = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (reg_file[4] - output.instruction.rt);
+    result = result + (24 - output.instruction.rd);
+    
+    //addi case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.Imm = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+    //beq case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+    //lw case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.Imm = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+    //sw case
+    input.instruction.opcode = 1;
+    input.instruction.rs = 2;
+    input.instruction.rt = 4;
+    input.instruction.Imm = 24;
+    output = ID(reg_file, input);
+    
+    result = reg_file[2] - output.instruction.rs;
+    result = result + (2 - output.instruction.rt);
+    result = result + (24 - output.instruction.Imm);
+    
+	return result;
+}
+*/
 /*
 int EX_Test_Add(){
 	//addition test
@@ -80,9 +189,26 @@ int MEM_Test(){
 	return 0;
 }
 
+
 int WB_Test(){
+	/*
+    struct buffer input;
+    int result;
+    long* reg_file = {88,188,288,388,488,588,688,788,888,988,1088,1188,1288,1388,1488,1588,1688,1788,1888,1988,2088,2188,2288,2388,2488,2588,2688,2788,2888,2988,3088,3188};
+    input.instruction.opcode = add;
+    input.data = 88;
+    for(int i=0;i<32;i++){
+        input.wbReg = i;
+        int count = WB(0,reg_file,input);
+    }
+    for(int i=0;i<32;i++){
+        result = result + reg_file[i]-88;
+    }
+	return result;
+	*/
 	return 0;
 }
+
 
 int numLines_test1(){
 	FILE *fp;fp = fopen("test1.txt", "r");
