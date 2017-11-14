@@ -65,7 +65,7 @@ char *str_cat(char *dest, const char *src);
 struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
 struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
-int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
+int EX(int n, int m, int *p);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
@@ -245,7 +245,7 @@ int main (int argc, char *argv[]){
 		printInst(IDEX.instruction);
 
 		printf("%s\n", "Execute");
-		EX(1,1);
+		EX(1,1,&pgm_c);
 		printInst(EXMEM.instruction); printf("DATA: %d\n\n", EXMEM.data);
 
 		printf("%s\n", "MEM");
@@ -1061,7 +1061,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 
 }
 
-int EX(int n, int m){
+int EX(int n, int m, int *p){
 
 
 	//if(IDEX.readyToRead!=0){
@@ -1099,7 +1099,7 @@ int EX(int n, int m){
     }else if(IDEX.instruction.opcode==beq){
         BRANCH_PENDING=1; //maybe should be done in the ID stage
         if((IDEX.instruction.rs-IDEX.instruction.rt)==0){
-            PC=PC+IDEX.instruction.Imm;
+            *p=*p+IDEX.instruction.Imm;/////////********************change program counter
         }
         EXMEM.wbReg = -1;  //do not write anything to reg file
         EXMEM.address = -1;
@@ -1109,7 +1109,7 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;
     }else if(IDEX.instruction.opcode==5){
-        EXMEM.wbReg = IDEX.instruction.rt;
+        EXMEM.wbReg = IDEX.instruction.rt; 
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
@@ -1172,7 +1172,7 @@ int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem){//should take 
 
 //takes previous buffer and returns total cycles taken so far
 int WB(int cycles_count, long *registers, struct buffer MemWb){
-	if((MemWb.instruction.opcode >= add) || (MemWb.instruction.opcode <= mult)){
+	if((MemWb.instruction.opcode >= add) && (MemWb.instruction.opcode <= mult)){
 		registers[MemWb.instruction.rd] = MemWb.data;
 
 		WB_cycle_count++;
