@@ -647,26 +647,26 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[3])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[3]);
 		 }
 		 
 		 //rd
-		 if (!strcmp("0",commandArgs[3])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rd = 0;
 		 }
 		 else{
-			 output.rd = atoi(commandArgs[3]);
+			 output.rd = atoi(commandArgs[1]);
 		 }
 		 output.Imm = 0;
 		 return output;
@@ -680,26 +680,26 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[3])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[3]);
 		 }
 		 
 		 //rd
-		 if (!strcmp("0",commandArgs[3])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rd = 0;
 		 }
 		 else{
-			 output.rd = atoi(commandArgs[3]);
+			 output.rd = atoi(commandArgs[1]);
 		 }
 		 output.Imm = 0;
 		 return output;
@@ -712,18 +712,18 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[1]);
 		 }
 		 
 		 //Imm
@@ -751,26 +751,26 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[3])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[3]);
 		 }
 		 
 		 //rd
-		 if (!strcmp("0",commandArgs[3])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rd = 0;
 		 }
 		 else{
-			 output.rd = atoi(commandArgs[3]);
+			 output.rd = atoi(commandArgs[1]);
 		 }
 		 
 		 //Imm
@@ -784,18 +784,18 @@ struct inst parser(char *input){
 		 if(argumentCount == 4){
 			 
 					//rs
-					 if (!strcmp("0",commandArgs[1])){
+					 if (!strcmp("0",commandArgs[3])){
 						 output.rs = 0;
 					 }
 					 else{
-						 output.rs = atoi(commandArgs[1]);
+						 output.rs = atoi(commandArgs[3]);
 					 }
 					 //rt
-					 if (!strcmp("0",commandArgs[3])){
+					 if (!strcmp("0",commandArgs[1])){
 						 output.rt = 0;
 					 }
 					 else{
-						 output.rt = atoi(commandArgs[3]);
+						 output.rt = atoi(commandArgs[1]);
 					 }
 					 
 					 //Imm
@@ -816,18 +816,18 @@ struct inst parser(char *input){
 		 }
 		 else if(argumentCount == 3){
 					//rs
-				 if (!strcmp("0",commandArgs[1])){
+				 if (!strcmp("0",commandArgs[2])){
 					 output.rs = 0;
 				 }
 				 else{
-					 output.rs = atoi(commandArgs[1]);
+					 output.rs = atoi(commandArgs[2]);
 				 }
 				 //rt
-				 if (!strcmp("0",commandArgs[2])){
+				 if (!strcmp("0",commandArgs[1])){
 					 output.rt = 0;
 				 }
 				 else{
-					 output.rt = atoi(commandArgs[2]);
+					 output.rt = atoi(commandArgs[1]);
 				 }
 				 output.rd = 0;
 				 output.Imm = 0;
@@ -843,18 +843,18 @@ struct inst parser(char *input){
 		 if(argumentCount == 4){
 			 
 					//rs
-					 if (!strcmp("0",commandArgs[1])){
+					 if (!strcmp("0",commandArgs[3])){
 						 output.rs = 0;
 					 }
 					 else{
-						 output.rs = atoi(commandArgs[1]);
+						 output.rs = atoi(commandArgs[3]);
 					 }
 					 //rt
-					 if (!strcmp("0",commandArgs[3])){
+					 if (!strcmp("0",commandArgs[1])){
 						 output.rt = 0;
 					 }
 					 else{
-						 output.rt = atoi(commandArgs[3]);
+						 output.rt = atoi(commandArgs[1]);
 					 }
 					 
 					 //Imm
@@ -875,18 +875,18 @@ struct inst parser(char *input){
 		 }
 		 else if(argumentCount == 3){
 					//rs
-				 if (!strcmp("0",commandArgs[1])){
+				 if (!strcmp("0",commandArgs[2])){
 					 output.rs = 0;
 				 }
 				 else{
-					 output.rs = atoi(commandArgs[1]);
+					 output.rs = atoi(commandArgs[2]);
 				 }
 				 //rt
-				 if (!strcmp("0",commandArgs[2])){
+				 if (!strcmp("0",commandArgs[1])){
 					 output.rt = 0;
 				 }
 				 else{
-					 output.rt = atoi(commandArgs[2]);
+					 output.rt = atoi(commandArgs[1]);
 				 }
 				 output.rd = 0;
 				 output.Imm = 0;
@@ -906,18 +906,18 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[1]);
 		 }
 		 
 		 //Imm
