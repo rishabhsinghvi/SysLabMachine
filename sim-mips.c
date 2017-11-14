@@ -996,6 +996,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 
 	if(IfId.instruction.opcode == haltSimulation){
 	//halt simulation instruction detected, propagate the halt instruction
+		IDEX = IfId;
 	return IfId;
 	}
 	
@@ -1128,7 +1129,7 @@ int EX(int n, int m){
     	return n;
     }else if(IDEX.instruction.opcode==3){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
-            result = result&+0x0000ffff; //making sure the result if only the low reg
+            result = result&0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
             EXMEM.address = -1;
