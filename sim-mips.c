@@ -294,7 +294,7 @@ char *progScannner(char *c){
 		exit(0);
 	}
 
-	//printf("%s", ">");
+	printf("%s", ">");
 
 	/*
 	for (int i = strlen(ret); i >= 0; --i){
@@ -309,13 +309,13 @@ char *progScannner(char *c){
 
 	for (i = strlen(ret); i >= 0; --i){
 		if(ret[i] >='0' && ret[i] <= '9'){
-			//printf("%c", ret[i]);
+			printf("%c", ret[i]);
 			ret[i+1]='\0';
 			break;
 		}
 
 	}
-	//printf("%s-%s\n", "<",ret);
+	printf("%s-%s\n", "<",ret);
 
 	return ret;
 	free(ret);
