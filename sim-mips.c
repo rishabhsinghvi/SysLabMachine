@@ -233,35 +233,37 @@ int main (int argc, char *argv[]){
 	Inst_Mem = readFile(input);
 	initLatches();HALT_SIMULATION = 0;
 
-	printf("\n\n\nPROGRAM COUNT:%d\n",pgm_c);
+	while(!HALT_SIMULATION){
+		printf("\n\n\nPROGRAM COUNT:%d          HALT:%d\n",pgm_c, HALT_SIMULATION);
 
-	printf("%s\n", "Instruction Fetch");
-	IF(c,pgm_c,Inst_Mem);
-	printInst(IFID.instruction);
+		printf("%s\n", "Instruction Fetch");
+		IF(c,pgm_c,Inst_Mem);
+		printInst(IFID.instruction);
 
-	printf("%s\n", "Instruction Decode");
-	ID(mips_reg, IFID);
-	printInst(IDEX.instruction);
+		printf("%s\n", "Instruction Decode");
+		ID(mips_reg, IFID);
+		printInst(IDEX.instruction);
 
-	printf("%s\n", "Execute");
-	EX(1,1);
-	printInst(EXMEM.instruction); printf("DATA: %d\n\n", EXMEM.data);
+		printf("%s\n", "Execute");
+		EX(1,1);
+		printInst(EXMEM.instruction); printf("DATA: %d\n\n", EXMEM.data);
 
-	printf("%s\n", "MEM");
-	MEM(1,1,EXMEM);
-	printInst(MEMWB.instruction);
+		printf("%s\n", "MEM");
+		MEM(1,1,EXMEM);
+		printInst(MEMWB.instruction);
 
-	printf("%s\n", "WB");
-	WB(1, mips_reg, MEMWB);
+		printf("%s\n", "WB");
+		WB(1, mips_reg, MEMWB);
 
 
-	pgm_c++;
+		pgm_c++;
 
-	int j;
-	for(j = 0; j < 32; j++){
-		printf("%d ", mips_reg[j]);
-		if((j+1)%4 == 0)
-			printf("\n");
+		int j;
+		for(j = 0; j < 32; j++){
+			printf("%d ", mips_reg[j]);
+			if((j+1)%4 == 0)
+				printf("\n");
+		}
 	}
 
 	/*
@@ -1126,7 +1128,7 @@ int EX(int n, int m){
     	return n;
     }else if(IDEX.instruction.opcode==3){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
-            result = result|0x0000ffff; //making sure the result if only the low reg
+            result = result&+0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
             EXMEM.address = -1;
