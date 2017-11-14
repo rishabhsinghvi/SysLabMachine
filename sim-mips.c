@@ -74,7 +74,30 @@ struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
 void initLatches(){
-
+IFID.readyToRead = 0;
+IFID.readytoWrite = 1;
+IFID.address = -1;
+IFID.wbReg = -1;
+IFID.VALID = 1;
+IFID.data = 0;
+IDEX.readyToRead = 0;
+IDEX.readytoWrite = 1;
+IDEX.address = -1;
+IDEX.wbReg = -1;
+IDEX.VALID = 1;
+IDEX.data = 0;
+EXMEM.readyToRead = 0;
+EXMEM.readytoWrite = 1;
+EXMEM.address = -1;
+EXMEM.wbReg = -1;
+EXMEM.VALID = 1;
+EXMEM.data = 0;
+MEMWB.readyToRead = 0;
+MEMWB.readytoWrite = 1;
+MEMWB.address = -1;
+MEMWB.wbReg = -1;
+MEMWB.VALID = 1;
+MEMWB.data = 0;
 }
 
 char *str_cat(char *dest, const char *src){
@@ -204,6 +227,7 @@ int main (int argc, char *argv[]){
 	//start your code from here
 	struct inst *Inst_Mem;
 	Inst_Mem = readFile(input);
+	initLatches();
 
 	while(!HALT_SIMULATION){
 
