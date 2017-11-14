@@ -210,15 +210,21 @@ int fileRead_test1(){
 	fp = fopen("test1.txt", "r");
 
 	struct inst *fileC = readFile(fp);
-	struct inst test = {1, 1, 0, 0, 10};
+	struct inst test[5] = {{1, 1, 0, 0, 10}, {1,1,0,0,20},{1,2,0,0,30},{3,3,1,2,0},{7,0,0,0,0}};
 	//printInst(fileC[0]);
 
-	return compare_instructions(fileC[0], test);
+	int i,t;t=0;
+	for(i = 0; i < 5; i++){
+		t += compare_instructions(fileC[i], test[i]);
+	}
+
+	return t == 5;
 	fclose(fp);
 	
 	return 0;
 	
 }
+
 
 int progScanner_Test1(){
 
