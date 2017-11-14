@@ -245,7 +245,7 @@ int main (int argc, char *argv[]){
 
 	printf("%s\n", "Execute");
 	EX(1,1);
-	printInst(EXMEM.instruction); printf("%d\n\n", EXMEM.data);
+	printInst(EXMEM.instruction); printf("DATA: %d\n\n", EXMEM.data);
 
 	printf("%s\n", "MEM");
 	MEM(1,1,EXMEM);
@@ -647,26 +647,26 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[3])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[3]);
 		 }
 		 
 		 //rd
-		 if (!strcmp("0",commandArgs[3])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rd = 0;
 		 }
 		 else{
-			 output.rd = atoi(commandArgs[3]);
+			 output.rd = atoi(commandArgs[1]);
 		 }
 		 output.Imm = 0;
 		 return output;
@@ -680,26 +680,26 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[3])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[3]);
 		 }
 		 
 		 //rd
-		 if (!strcmp("0",commandArgs[3])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rd = 0;
 		 }
 		 else{
-			 output.rd = atoi(commandArgs[3]);
+			 output.rd = atoi(commandArgs[1]);
 		 }
 		 output.Imm = 0;
 		 return output;
@@ -712,18 +712,18 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[1]);
 		 }
 		 
 		 //Imm
@@ -751,26 +751,26 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[3])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[3]);
 		 }
 		 
 		 //rd
-		 if (!strcmp("0",commandArgs[3])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rd = 0;
 		 }
 		 else{
-			 output.rd = atoi(commandArgs[3]);
+			 output.rd = atoi(commandArgs[1]);
 		 }
 		 
 		 //Imm
@@ -784,18 +784,18 @@ struct inst parser(char *input){
 		 if(argumentCount == 4){
 			 
 					//rs
-					 if (!strcmp("0",commandArgs[1])){
+					 if (!strcmp("0",commandArgs[3])){
 						 output.rs = 0;
 					 }
 					 else{
-						 output.rs = atoi(commandArgs[1]);
+						 output.rs = atoi(commandArgs[3]);
 					 }
 					 //rt
-					 if (!strcmp("0",commandArgs[3])){
+					 if (!strcmp("0",commandArgs[1])){
 						 output.rt = 0;
 					 }
 					 else{
-						 output.rt = atoi(commandArgs[3]);
+						 output.rt = atoi(commandArgs[1]);
 					 }
 					 
 					 //Imm
@@ -816,18 +816,18 @@ struct inst parser(char *input){
 		 }
 		 else if(argumentCount == 3){
 					//rs
-				 if (!strcmp("0",commandArgs[1])){
+				 if (!strcmp("0",commandArgs[2])){
 					 output.rs = 0;
 				 }
 				 else{
-					 output.rs = atoi(commandArgs[1]);
+					 output.rs = atoi(commandArgs[2]);
 				 }
 				 //rt
-				 if (!strcmp("0",commandArgs[2])){
+				 if (!strcmp("0",commandArgs[1])){
 					 output.rt = 0;
 				 }
 				 else{
-					 output.rt = atoi(commandArgs[2]);
+					 output.rt = atoi(commandArgs[1]);
 				 }
 				 output.rd = 0;
 				 output.Imm = 0;
@@ -843,18 +843,18 @@ struct inst parser(char *input){
 		 if(argumentCount == 4){
 			 
 					//rs
-					 if (!strcmp("0",commandArgs[1])){
+					 if (!strcmp("0",commandArgs[3])){
 						 output.rs = 0;
 					 }
 					 else{
-						 output.rs = atoi(commandArgs[1]);
+						 output.rs = atoi(commandArgs[3]);
 					 }
 					 //rt
-					 if (!strcmp("0",commandArgs[3])){
+					 if (!strcmp("0",commandArgs[1])){
 						 output.rt = 0;
 					 }
 					 else{
-						 output.rt = atoi(commandArgs[3]);
+						 output.rt = atoi(commandArgs[1]);
 					 }
 					 
 					 //Imm
@@ -875,18 +875,18 @@ struct inst parser(char *input){
 		 }
 		 else if(argumentCount == 3){
 					//rs
-				 if (!strcmp("0",commandArgs[1])){
+				 if (!strcmp("0",commandArgs[2])){
 					 output.rs = 0;
 				 }
 				 else{
-					 output.rs = atoi(commandArgs[1]);
+					 output.rs = atoi(commandArgs[2]);
 				 }
 				 //rt
-				 if (!strcmp("0",commandArgs[2])){
+				 if (!strcmp("0",commandArgs[1])){
 					 output.rt = 0;
 				 }
 				 else{
-					 output.rt = atoi(commandArgs[2]);
+					 output.rt = atoi(commandArgs[1]);
 				 }
 				 output.rd = 0;
 				 output.Imm = 0;
@@ -906,18 +906,18 @@ struct inst parser(char *input){
 		 }
 		 
 		 //rs
-		 if (!strcmp("0",commandArgs[1])){
+		 if (!strcmp("0",commandArgs[2])){
 			 output.rs = 0;
 		 }
 		 else{
-			 output.rs = atoi(commandArgs[1]);
+			 output.rs = atoi(commandArgs[2]);
 		 }
 		 //rt
-		 if (!strcmp("0",commandArgs[2])){
+		 if (!strcmp("0",commandArgs[1])){
 			 output.rt = 0;
 		 }
 		 else{
-			 output.rt = atoi(commandArgs[2]);
+			 output.rt = atoi(commandArgs[1]);
 		 }
 		 
 		 //Imm
@@ -1060,14 +1060,17 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 }
 
 int EX(int n, int m){
+	printf("%s    %d\n", "EXECUTE", IDEX.instruction.opcode);
+
+
+
 	if(IDEX.readyToRead!=0){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
         EXMEM.readyToRead = 1;
         EXMEM.instruction = IDEX.instruction;
         return n;
-    }
-    if(IDEX.instruction.opcode==add){
+    }else if(IDEX.instruction.opcode==add){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
@@ -1076,8 +1079,8 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         //add to useful process count
         return n;
-    }
-    if(IDEX.instruction.opcode==addi){
+    }else if(IDEX.instruction.opcode==addi){
+    	printf("%s   %d     %d\n", "ADDI-EX", IDEX.instruction.rs, IDEX.instruction.Imm);
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
@@ -1085,8 +1088,7 @@ int EX(int n, int m){
         EXMEM.readyToRead = 1;
         EXMEM.instruction = IDEX.instruction;
         return n;
-    }
-    if(IDEX.instruction.opcode==sub){
+    }else if(IDEX.instruction.opcode==sub){
         EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
@@ -1094,8 +1096,7 @@ int EX(int n, int m){
         EXMEM.readyToRead = 1;
         EXMEM.instruction = IDEX.instruction;
         return n;
-    }
-    if(IDEX.instruction.opcode==beq){
+    }else if(IDEX.instruction.opcode==beq){
         BRANCH_PENDING=1; //maybe should be done in the ID stage
         if((IDEX.instruction.rs-IDEX.instruction.rt)==0){
             PC=PC+IDEX.instruction.Imm;
@@ -1107,39 +1108,35 @@ int EX(int n, int m){
         EXMEM.readyToRead = 1;
         EXMEM.instruction = IDEX.instruction;
         return n;
-    }
-    if(IDEX.instruction.opcode==lw){
+    }else if(IDEX.instruction.opcode==lw){
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
         EXMEM.instruction = IDEX.instruction;
         return n;
-    }
-    if(IDEX.instruction.opcode==sw){
+    }else if(IDEX.instruction.opcode==sw){
         EXMEM.data = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
         EXMEM.instruction = IDEX.instruction;
         return n;  
-    }
-    if(IDEX.instruction.opcode==haltSimulation){
+    }else if(IDEX.instruction.opcode==haltSimulation){
     	EXMEM.instruction = IDEX.instruction;
     	EXMEM.wbReg = -1;
     	EXMEM.address = -1;
     	return n;
-    }
-        if(IDEX.instruction.opcode==mult){
-            int result = IDEX.instruction.rs*IDEX.instruction.rt;
-            result = result|0x0000ffff; //making sure the result if only the low reg
-            EXMEM.data = result;
-            EXMEM.wbReg = IDEX.instruction.rd;
-            EXMEM.address = -1;
-            EXMEM.readyToRead = 1;
-            EXCTDN = EXCTDN + m;
-            EXMEM.instruction = IDEX.instruction;
-            return m;
+    }else if(IDEX.instruction.opcode==mult){
+        int result = IDEX.instruction.rs*IDEX.instruction.rt;
+        result = result|0x0000ffff; //making sure the result if only the low reg
+        EXMEM.data = result;
+        EXMEM.wbReg = IDEX.instruction.rd;
+        EXMEM.address = -1;
+        EXMEM.readyToRead = 1;
+        EXCTDN = EXCTDN + m;
+        EXMEM.instruction = IDEX.instruction;
+        return m;
             
         }
     }
