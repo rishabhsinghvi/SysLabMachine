@@ -293,7 +293,28 @@ char *progScannner(char *c){
 		printf("%s\n", "Mismatched paranthesis");
 		exit(0);
 	}
-	
+
+	//printf("%s", ">");
+
+	/*
+	for (int i = strlen(ret); i >= 0; --i){
+		if(ret[i]!=' ' && ret!='\0'){
+			printf("%c", ret[i]);
+			break;
+		}
+
+	}
+	printf("%s\n", "<");
+	*/
+	for (int i = strlen(ret); i >= 0; --i){
+		if(ret[i] >='0' && ret[i] <= '9'){
+			//printf("%c", ret[i]);
+			ret[i+1]='\0';
+			break;
+		}
+
+	}
+	//printf("%s-%s\n", "<",ret);
 
 	return ret;
 	free(ret);
