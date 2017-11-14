@@ -64,7 +64,7 @@ int numLines(FILE* fp);
 char *str_cat(char *dest, const char *src);
 struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
-struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
+int ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m, int *p);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
@@ -73,6 +73,13 @@ char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
+
+void printBuffer(struct buffer b){
+	//printf("Instruction\n");
+	//printInst(b.instruction);
+	printf("ready to read:%d\nready to write:%d\ndata:%d\n", b.readyToRead, b.readytoWrite, b.data);
+}
+
 void initLatches(){
 IFID.readyToRead = 0;
 IFID.readytoWrite = 1;
@@ -80,18 +87,21 @@ IFID.address = -1;
 IFID.wbReg = -1;
 IFID.VALID = 1;
 IFID.data = 0;
+
 IDEX.readyToRead = 0;
 IDEX.readytoWrite = 1;
 IDEX.address = -1;
 IDEX.wbReg = -1;
 IDEX.VALID = 1;
 IDEX.data = 0;
+
 EXMEM.readyToRead = 0;
 EXMEM.readytoWrite = 1;
 EXMEM.address = -1;
 EXMEM.wbReg = -1;
 EXMEM.VALID = 1;
 EXMEM.data = 0;
+
 MEMWB.readyToRead = 0;
 MEMWB.readytoWrite = 1;
 MEMWB.address = -1;
@@ -233,24 +243,30 @@ int main (int argc, char *argv[]){
 	Inst_Mem = readFile(input);
 	initLatches();HALT_SIMULATION = 0;
 
+	/*
+
 	while(!HALT_SIMULATION){
 		printf("\n\n\nPROGRAM COUNT:%d          HALT:%d\n",pgm_c, HALT_SIMULATION);
 
 		printf("%s\n", "Instruction Fetch");
 		IF(c,pgm_c,Inst_Mem);
 		printInst(IFID.instruction);
+		printBuffer(IFID);
 
 		printf("%s\n", "Instruction Decode");
 		ID(mips_reg, IFID);
 		printInst(IDEX.instruction);
+		printBuffer(IDEX);
 
 		printf("%s\n", "Execute");
 		EX(1,1,&pgm_c);
-		printInst(EXMEM.instruction); printf("DATA: %d\n\n", EXMEM.data);
+		printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
+		printBuffer(EXMEM);
 
 		printf("%s\n", "MEM");
 		MEM(1,1,EXMEM);
 		printInst(MEMWB.instruction);
+		printBuffer(MEMWB);
 
 		printf("%s\n", "WB");
 		WB(1, mips_reg, MEMWB);
@@ -265,6 +281,49 @@ int main (int argc, char *argv[]){
 				printf("\n");
 		}
 	}
+	*/
+
+	while(!HALT_SIMULATION){
+		printf("\n\n\nPROGRAM COUNT:%d          HALT:%d\n",pgm_c, HALT_SIMULATION);
+
+		printf("%s\n", "WB");
+		WB(1, mips_reg, MEMWB);
+
+		printf("%s\n", "MEM");
+		MEM(1,1,EXMEM);
+		printInst(MEMWB.instruction);
+		printBuffer(MEMWB);
+
+		printf("%s\n", "Execute");
+		EX(1,1,&pgm_c);
+		printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
+		printBuffer(EXMEM);
+
+		printf("%s\n", "Instruction Decode");
+		ID(mips_reg, IFID);
+		printInst(IDEX.instruction);
+		printBuffer(IDEX);
+
+		printf("%s\n", "Instruction Fetch");
+		IF(c,pgm_c,Inst_Mem);
+		printInst(IFID.instruction);
+		printBuffer(IFID);
+
+
+
+		if(!RAW_HAZARD){
+			pgm_c++;
+		}
+
+
+		int j;
+		for(j = 0; j < 32; j++){
+			printf("%d ", mips_reg[j]);
+			if((j+1)%4 == 0)
+				printf("\n");
+		}
+	}
+
 
 	/*
 	while(!HALT_SIMULATION){
@@ -967,6 +1026,7 @@ struct inst parser(char *input){
 
 
 int IF(int c, int pgm_c, struct inst *instruct){
+	/*
         if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0)){//instroduce noop to the system
             struct inst toBuffer;
             toBuffer.opcode = noop;
@@ -975,17 +1035,19 @@ int IF(int c, int pgm_c, struct inst *instruct){
             IFCTDN=IFCTDN+c;
             return c;
         }
-        if(DECODE_UNFINISHED!=0){//do nothing because decode is not finished reading from bufffer
-            return c;
-        }
+    */
+    if(IFID.readytoWrite && !BRANCH_PENDING){
         IFID.instruction = instruct[pgm_c];
         IFID.readyToRead = 1;
+        IFID.readytoWrite = 0;
         IFCTDN = 1;
-    IFCTDN = IFCTDN + c;
-    return c;
+    	IFCTDN = IFCTDN + c;
+    	return c;
+	}
+	return 0;
 }
 
-struct buffer ID(long *registers, struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+int ID(long *registers, struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
 	/*
 	if(IfId.readyToRead == 0){
 		//not ready to read
@@ -993,11 +1055,38 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 		return IDEX;
 	}
 	*/
+	if((IFID.instruction.rs != 0) && ((IFID.instruction.rs == IDEX.instruction.rd) || (IFID.instruction.rs  == EXMEM.instruction.rd) || (IFID.instruction.rs == MEMWB.instruction.rd))){
+		printf("RAW HAZARD, Register:%d\n", IFID.instruction.rs);
+		IDEX.instruction.opcode = noop;
+		IDEX.instruction.rd = 0;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			//IFID.readytoWrite = 1;
+			//IFID.readyToRead = 0;
+
+		RAW_HAZARD = 1;
+		return 0;
+	}
+	if((IFID.instruction.rt != 0) && ((IFID.instruction.rt == IDEX.instruction.rd) || (IFID.instruction.rt  == EXMEM.instruction.rd) || (IFID.instruction.rt == MEMWB.instruction.rd))){
+		printf("RAW HAZARD, Register:%d\n", IFID.instruction.rt);
+		IDEX.instruction.opcode = noop;
+		IDEX.instruction.rd = 0;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			//IFID.readytoWrite = 1;
+			//IFID.readyToRead = 0;
+			RAW_HAZARD = 1;
+		return 0;
+	}
+	RAW_HAZARD = 0;
+
+	if(IDEX.readytoWrite && IFID.readyToRead){
 
 	if(IfId.instruction.opcode == haltSimulation){
 	//halt simulation instruction detected, propagate the halt instruction
 		IDEX = IfId;
-	return IfId;
+	//return IfId;
+	return 1;
 	}
 	
 	
@@ -1006,56 +1095,93 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 		case addi: // i type
 			printf("%s\n", "ADDI");
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 			
 		case sub: // r type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 			
 		case mult: //r type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 			
 		case beq: //i type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
             IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			BRANCH_PENDING = 1;
+			return 1;//return IfId;
 			
 		case lw://i type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 		
 		case sw://i type
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
             IDEX = IfId;
-			
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 			
 		case haltSimulation:
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 			
 		case noop:
 			IDEX = IfId;
-			return IfId;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+			IFID.readytoWrite = 1;
+			IFID.readyToRead = 0;
+			return 1;//return IfId;
 		
 	}
+}
 	
 	
 
@@ -1064,28 +1190,38 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 int EX(int n, int m, int *p){
 
 
-	//if(IDEX.readyToRead!=0){
+	if(IDEX.readyToRead && EXMEM.readytoWrite){
     if(IDEX.instruction.opcode==noop){
+    	printf("EXECUTE NOOP\n");
         EXECUTE_UNFINISHED = 0;
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXMEM.instruction = IDEX.instruction;
         return n;
-    }else if(IDEX.instruction.opcode==0){
+    }else if(IDEX.instruction.opcode==add){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXCTDN = EXCTDN + n;
         EXMEM.instruction = IDEX.instruction;
         //add to useful process count
         return n;
-    }else if(IDEX.instruction.opcode==1){
+    }else if(IDEX.instruction.opcode==addi){
     	//printf("%s   %d     %d\n", "ADDI-EX", IDEX.instruction.rs, IDEX.instruction.Imm);
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXMEM.instruction = IDEX.instruction;
         return n;
     }else if(IDEX.instruction.opcode==2){
@@ -1094,6 +1230,9 @@ int EX(int n, int m, int *p){
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXMEM.instruction = IDEX.instruction;
         return n;
     }else if(IDEX.instruction.opcode==beq){
@@ -1106,6 +1245,9 @@ int EX(int n, int m, int *p){
         BRANCH_PENDING = 0;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXMEM.instruction = IDEX.instruction;
         return n;
     }else if(IDEX.instruction.opcode==5){
@@ -1113,6 +1255,9 @@ int EX(int n, int m, int *p){
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXMEM.instruction = IDEX.instruction;
         return n;
     }else if(IDEX.instruction.opcode==6){
@@ -1120,12 +1265,19 @@ int EX(int n, int m, int *p){
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
         EXMEM.instruction = IDEX.instruction;
         return n; 
     }else if(IDEX.instruction.opcode==7){
     	EXMEM.instruction = IDEX.instruction;
     	EXMEM.wbReg = -1;
     	EXMEM.address = -1;
+        EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;    	
     	return n;
     }else if(IDEX.instruction.opcode==3){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
@@ -1133,7 +1285,10 @@ int EX(int n, int m, int *p){
             EXMEM.data = result;
             EXMEM.wbReg = IDEX.instruction.rd;
             EXMEM.address = -1;
-            EXMEM.readyToRead = 1;
+        EXMEM.readyToRead = 1;
+        EXMEM.readytoWrite = 0;
+        IDEX.readytoWrite = 1;
+        IDEX.readyToRead = 0;
             EXCTDN = EXCTDN + m;
             EXMEM.instruction = IDEX.instruction;
             return m;
@@ -1145,48 +1300,64 @@ int EX(int n, int m, int *p){
     	EXMEM.instruction = IDEX.instruction;
     	return n;
     }
+}
     return 0;
 }
 
 //takes previous buffer and return the total cycles taken so far
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem){//should take sim_cycle, c from command line and last buffer
-	int address = ExeMem.instruction.rs + ExeMem.instruction.Imm;
+	
+	if(EXMEM.readyToRead && MEMWB.readytoWrite){
+		int address = ExeMem.instruction.rs + ExeMem.instruction.Imm;
 
-	if(ExeMem.instruction.opcode == sw){
-		ExeMem.instruction.rt = dataMemory[address];
+		if(ExeMem.instruction.opcode == sw){
+			ExeMem.instruction.rt = dataMemory[address];
 
-		cycles_counter += mem_cycles;
-		MEM_cycle_count += mem_cycles;
+			cycles_counter += mem_cycles;
+			MEM_cycle_count += mem_cycles;
 
-	}else if(ExeMem.instruction.opcode == lw){
-		dataMemory[address] = ExeMem.instruction.rt; 
+		}else if(ExeMem.instruction.opcode == lw){
+			dataMemory[address] = ExeMem.instruction.rt; 
 
-		cycles_counter += mem_cycles;
-		MEM_cycle_count += mem_cycles;
+			cycles_counter += mem_cycles;
+			MEM_cycle_count += mem_cycles;
+		}
+		MEMWB = ExeMem;
+		MEMWB.readyToRead = 1;
+		MEMWB.readytoWrite = 0;
+		EXMEM.readyToRead = 0;
+		EXMEM.readytoWrite = 1;
+		
 	}
-
-	MEMWB = ExeMem;
-
 	return cycles_counter;
+
+
 }
 
 //takes previous buffer and returns total cycles taken so far
 int WB(int cycles_count, long *registers, struct buffer MemWb){
-	if((MemWb.instruction.opcode >= add) && (MemWb.instruction.opcode <= mult)){
-		registers[MemWb.instruction.rd] = MemWb.data;
 
-		WB_cycle_count++;
-		cycles_count++;
+	if(MEMWB.readyToRead){
 
-	}else if(MemWb.instruction.opcode == sw){
-		registers[MemWb.instruction.rd] = MemWb.instruction.rt;
+		if((MemWb.instruction.opcode >= add) && (MemWb.instruction.opcode <= mult)){
+			registers[MemWb.instruction.rd] = MemWb.data;
 
-		WB_cycle_count++;
-		cycles_count++;
-	}
+			WB_cycle_count++;
+			cycles_count++;
 
-	if(MemWb.instruction.opcode == haltSimulation){
-		HALT_SIMULATION = 1;
+		}else if(MemWb.instruction.opcode == sw){
+			registers[MemWb.instruction.rd] = MemWb.instruction.rt;
+
+			WB_cycle_count++;
+			cycles_count++;
+		}
+
+		if(MemWb.instruction.opcode == haltSimulation){
+			HALT_SIMULATION = 1;
+		}
+
+		MEMWB.readytoWrite = 1;
+		MEMWB.readyToRead = 0;
 	}
 
 

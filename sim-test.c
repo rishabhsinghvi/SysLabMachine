@@ -5,7 +5,7 @@
 int numLines(FILE* fp);
 struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
-struct buffer ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
+int ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
