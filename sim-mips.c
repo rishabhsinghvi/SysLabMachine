@@ -249,7 +249,7 @@ char *progScannner(char *c){
 
 	char *ret; ret = (char *)malloc(strlen(c));
 	char t[2];
-	char space,open;open = 0;
+	char space,open;open = 0;space=1;
 
 	int i;
 	for (i = 0; i < strlen(c); i++){
@@ -269,7 +269,6 @@ char *progScannner(char *c){
 				t[1] = '\0';
 				str_cat(ret, t);
 			}
-
 			space = 1;
 		}
 
