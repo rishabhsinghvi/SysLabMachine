@@ -205,7 +205,7 @@ int main (int argc, char *argv[]){
 	}
 	
 
-	//start your code from here
+	//start your code from here **************************************************
 	struct inst *Inst_Mem;
 	Inst_Mem = readFile(input);
 
