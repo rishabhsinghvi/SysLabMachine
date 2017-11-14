@@ -74,7 +74,30 @@ struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
 void initLatches(){
-
+IFID.readyToRead = 0;
+IFID.readytoWrite = 1;
+IFID.address = -1;
+IFID.wbReg = -1;
+IFID.VALID = 1;
+IFID.data = 0;
+IDEX.readyToRead = 0;
+IDEX.readytoWrite = 1;
+IDEX.address = -1;
+IDEX.wbReg = -1;
+IDEX.VALID = 1;
+IDEX.data = 0;
+EXMEM.readyToRead = 0;
+EXMEM.readytoWrite = 1;
+EXMEM.address = -1;
+EXMEM.wbReg = -1;
+EXMEM.VALID = 1;
+EXMEM.data = 0;
+MEMWB.readyToRead = 0;
+MEMWB.readytoWrite = 1;
+MEMWB.address = -1;
+MEMWB.wbReg = -1;
+MEMWB.VALID = 1;
+MEMWB.data = 0;
 }
 
 void printInst(struct inst a){
@@ -208,8 +231,9 @@ int main (int argc, char *argv[]){
 	//start your code from here **************************************************
 	struct inst *Inst_Mem;
 	Inst_Mem = readFile(input);
+	initLatches();HALT_SIMULATION = 0;
 
-	HALT_SIMULATION = 0;
+	printf("\n\n\nPROGRAM COUNT:%d\n",pgm_c);
 
 	printf("%s\n", "Instruction Fetch");
 	IF(c,pgm_c,Inst_Mem);
@@ -976,12 +1000,12 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 	
 	
 	switch(IfId.instruction.opcode){
-		case add:
+		case add: //r type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
 			return IfId;
-		case addi:
+		case addi: // i type
 			printf("%s\n", "ADDI");
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
@@ -989,31 +1013,31 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 			IDEX = IfId;
 			return IfId;
 			
-		case sub:
+		case sub: // r type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
 			return IfId;
 			
-		case mult:
+		case mult: //r type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
 			return IfId;
 			
-		case beq:
+		case beq: //i type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
             IDEX = IfId;
 			return IfId;
 			
-		case lw:
+		case lw://i type
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
 			IDEX = IfId;
 			return IfId;
 		
-		case sw:
+		case sw://i type
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
@@ -1040,6 +1064,7 @@ int EX(int n, int m){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==add){
@@ -1048,6 +1073,7 @@ int EX(int n, int m){
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXMEM.readyToRead = 1;
         EXCTDN = EXCTDN + n;
+        EXMEM.instruction = IDEX.instruction;
         //add to useful process count
         return n;
     }
@@ -1057,6 +1083,7 @@ int EX(int n, int m){
         EXMEM.address = -1;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==sub){
@@ -1065,6 +1092,7 @@ int EX(int n, int m){
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==beq){
@@ -1077,6 +1105,7 @@ int EX(int n, int m){
         BRANCH_PENDING = 0;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==lw){
@@ -1084,6 +1113,7 @@ int EX(int n, int m){
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==sw){
@@ -1091,6 +1121,7 @@ int EX(int n, int m){
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;  
     }
     if(IDEX.instruction.opcode==haltSimulation){
@@ -1107,12 +1138,14 @@ int EX(int n, int m){
             EXMEM.address = -1;
             EXMEM.readyToRead = 1;
             EXCTDN = EXCTDN + m;
+            EXMEM.instruction = IDEX.instruction;
             return m;
             
         }
     }
     else{
     	EXMEM.readyToRead=0;
+    	EXMEM.instruction = IDEX.instruction;
     	return n;
     }
     return 0;
