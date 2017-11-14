@@ -306,7 +306,8 @@ char *progScannner(char *c){
 	}
 	printf("%s\n", "<");
 	*/
-	for (int i = strlen(ret); i >= 0; --i){
+
+	for (i = strlen(ret); i >= 0; --i){
 		if(ret[i] >='0' && ret[i] <= '9'){
 			//printf("%c", ret[i]);
 			ret[i+1]='\0';
