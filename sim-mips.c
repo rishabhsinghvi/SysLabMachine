@@ -48,6 +48,7 @@ struct buffer
 	int readytoWrite;
 	int address;
 	int wbReg;
+	int VALID;
 	long data;
 };
 
@@ -72,7 +73,9 @@ char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
 
+void initLatches(){
 
+}
 
 char *str_cat(char *dest, const char *src){
     size_t i,j;
@@ -116,20 +119,22 @@ int numLines(FILE* fp){
 }
 
 struct inst *readFile(FILE* fp){
-	FILE *fp2;fp2 = fp;
-	int lines = numLines(fp2);
-	struct inst *instructions; instructions = (struct inst*)malloc(lines*sizeof(struct inst));
-	char line[100];int c; c = 0;
+	int lines = numLines(fp);
+	struct inst *instructions = (struct inst*)malloc(lines*sizeof(struct inst));
+	char line[100];
 
-	printf("%s\n", "initialize structs");
-
-	while(fgets(line, 100, fp)){
+	rewind(fp);
+	
+	int i;
+	for (i = 0; i < lines; ++i){
+		fgets(line, 100, fp);
 		size_t len = strlen(line);
-		printf("%s\n", line);
 
-		instructions[c] = parser(regNumberConverter(progScannner(line[len-1])));
-		c++;
+		instructions[i] = parser(regNumberConverter(progScannner(line)));
 	}
+
+	return instructions;
+	free(instructions);
 }
 
 
@@ -248,6 +253,8 @@ char *progScannner(char *c){
 	int i;
 	for (i = 0; i < strlen(c); i++){
 
+		if(c[i] == '\n')
+			return ret;
 
 		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9') || c[i] == '$'){
 			t[0] = c[i];

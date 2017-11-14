@@ -36,6 +36,10 @@ int compare_instructions(struct inst a, struct inst b){
 	}
 }
 
+void printInst(struct inst a){
+	printf("\nopcode: %d\nrs:%d\nrt:%d\nrd:%d\nImm:%d\n\n", a.opcode, a.rs, a.rt,a.rd,a.Imm);
+}
+
 int ExampleTest(){
 	return 0 == 0;
 }
@@ -201,19 +205,17 @@ int numLines_test1(){
 
 
 int fileRead_test1(){
-	/*
+	
 	FILE *fp;
 	fp = fopen("test1.txt", "r");
-	FILE *fp2;fp2 = fp;
-
-	printf("%s\t%d\n", "open file", numLines(fp2));
 
 	struct inst *fileC = readFile(fp);
-	struct inst test = {2, 1, 0, 10, 0};
+	struct inst test = {1, 1, 0, 0, 10};
+	//printInst(fileC[0]);
 
-	return compare_instructions(fileC[0], test) == 0;
+	return compare_instructions(fileC[0], test);
 	fclose(fp);
-	*/
+	
 	return 0;
 	
 }
