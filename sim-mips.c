@@ -556,7 +556,7 @@ struct inst parser(char *input){
 	char delimeter[] = " ";
 	char inputString[strlen(input)+1];
 	
-	inputString[strlen(input)+1] = '\0';
+	inputString[strlen(input)] = '\0';  //removed +1 index
 	
 	int l = 0;
 	
@@ -945,6 +945,7 @@ int IF(int c, int pgm_c, struct inst *instruct){
             struct inst toBuffer;
             toBuffer.opcode = noop;
             IFID.instruction = toBuffer;
+            IFID.readyToRead = 0;
             IFCTDN=IFCTDN+c;
             return c;
         }
@@ -963,6 +964,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 	/*
 	if(IfId.readyToRead == 0){
 		//not ready to read
+		IDEX.readyToRead = 0;
 		return IDEX;
 	}
 	*/
@@ -1034,6 +1036,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 }
 
 int EX(int n, int m){
+	if(IDEX.readyToRead!=0){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
         EXMEM.readyToRead = 1;
@@ -1107,6 +1110,11 @@ int EX(int n, int m){
             return m;
             
         }
+    }
+    else{
+    	EXMEM.readyToRead=0;
+    	return n;
+    }
     return 0;
 }
 
