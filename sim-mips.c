@@ -1067,7 +1067,7 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;
     }
-    if(IDEX.instruction.opcode==add){
+    if(IDEX.instruction.opcode==0){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
@@ -1077,7 +1077,7 @@ int EX(int n, int m){
         //add to useful process count
         return n;
     }
-    if(IDEX.instruction.opcode==addi){
+    if(IDEX.instruction.opcode==1){
         EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = -1;
@@ -1086,7 +1086,7 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;
     }
-    if(IDEX.instruction.opcode==sub){
+    if(IDEX.instruction.opcode==2){
         EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
         EXMEM.wbReg = IDEX.instruction.rd;
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
@@ -1095,7 +1095,7 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;
     }
-    if(IDEX.instruction.opcode==beq){
+    if(IDEX.instruction.opcode==4){
         BRANCH_PENDING=1; //maybe should be done in the ID stage
         if((IDEX.instruction.rs-IDEX.instruction.rt)==0){
             PC=PC+IDEX.instruction.Imm;
@@ -1108,7 +1108,7 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;
     }
-    if(IDEX.instruction.opcode==lw){
+    if(IDEX.instruction.opcode==5){
         EXMEM.wbReg = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
@@ -1116,7 +1116,7 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;
     }
-    if(IDEX.instruction.opcode==sw){
+    if(IDEX.instruction.opcode==6){
         EXMEM.data = IDEX.instruction.rt;
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
@@ -1124,13 +1124,13 @@ int EX(int n, int m){
         EXMEM.instruction = IDEX.instruction;
         return n;  
     }
-    if(IDEX.instruction.opcode==haltSimulation){
+    if(IDEX.instruction.opcode==7){
     	EXMEM.instruction = IDEX.instruction;
     	EXMEM.wbReg = -1;
     	EXMEM.address = -1;
     	return n;
     }
-        if(IDEX.instruction.opcode==mult){
+        if(IDEX.instruction.opcode==3){
             int result = IDEX.instruction.rs*IDEX.instruction.rt;
             result = result|0x0000ffff; //making sure the result if only the low reg
             EXMEM.data = result;
