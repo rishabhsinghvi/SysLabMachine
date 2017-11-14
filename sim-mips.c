@@ -1028,6 +1028,7 @@ int EX(int n, int m){
     if(IDEX.instruction.opcode==noop){
         EXECUTE_UNFINISHED = 0;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==add){
@@ -1036,6 +1037,7 @@ int EX(int n, int m){
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXMEM.readyToRead = 1;
         EXCTDN = EXCTDN + n;
+        EXMEM.instruction = IDEX.instruction;
         //add to useful process count
         return n;
     }
@@ -1045,6 +1047,7 @@ int EX(int n, int m){
         EXMEM.address = -1;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==sub){
@@ -1053,6 +1056,7 @@ int EX(int n, int m){
         EXMEM.address = -1;  //so you know nothing needs to be written to memory!
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==beq){
@@ -1065,6 +1069,7 @@ int EX(int n, int m){
         BRANCH_PENDING = 0;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==lw){
@@ -1072,6 +1077,7 @@ int EX(int n, int m){
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;
     }
     if(IDEX.instruction.opcode==sw){
@@ -1079,6 +1085,7 @@ int EX(int n, int m){
         EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
         EXCTDN = EXCTDN + n;
         EXMEM.readyToRead = 1;
+        EXMEM.instruction = IDEX.instruction;
         return n;  
     }
     if(IDEX.instruction.opcode==haltSimulation){
@@ -1095,12 +1102,14 @@ int EX(int n, int m){
             EXMEM.address = -1;
             EXMEM.readyToRead = 1;
             EXCTDN = EXCTDN + m;
+            EXMEM.instruction = IDEX.instruction;
             return m;
             
         }
     }
     else{
     	EXMEM.readyToRead=0;
+    	EXMEM.instruction = IDEX.instruction;
     	return n;
     }
     return 0;
