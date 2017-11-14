@@ -7,8 +7,8 @@ struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c);  					//author: Noah,		tester: Aleksa , Done in testing
 int ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
-int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
-int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
+int MEM(int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
+int WB(long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
 char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done

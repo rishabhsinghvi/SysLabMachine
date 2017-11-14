@@ -10,11 +10,9 @@
 #define REG_NUM 32
 
 int BRANCH_PENDING = 0;
-int WRITEBACK_REG_NEW = 0;  //new contents in the writeback buffer register for writeback stage to consume
 int RAW_HAZARD = 0;
 int HALT_SIMULATION = 0;
-int IFCTDN = 0;
-int IDCTDN = 0;
+
 int EXCTDN = 0;
 int MEM_cycle_count = 0;
 int WB_cycle_count = 0;
@@ -57,8 +55,8 @@ struct inst *readFile(FILE* fp);
 int IF(int c, int pgm_c, struct inst *instruct);  					//author: Noah,		tester: Aleksa , Done in testing
 int ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: Noah, 
 int EX(int n, int m, int *p);						//author: Noah,		tester: Aleksa, Peter, Done in testing
-int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
-int WB(int cycles_count, long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
+int MEM(int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
+int WB(long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
 char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
 char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
@@ -233,30 +231,32 @@ int main (int argc, char *argv[]){
 	struct inst *Inst_Mem;
 	Inst_Mem = readFile(input);
 	initLatches();HALT_SIMULATION = 0;
+	int IF_c,ID_c,EX_c,MEM_c,WB_c; 
+	IF_c = 0; ID_c = 0; EX_c = 0; MEM_c = 0; WB_c = 0;
 
 	while(!HALT_SIMULATION){
 		printf("\n\n\nPROGRAM COUNT:%d    ##################\n",pgm_c);
 
 		printf("%s\n", "WB");
-		WB(1, mips_reg, MEMWB);
+		WB_c += WB(mips_reg, MEMWB);
 
 		printf("%s\n", "MEM");
-		MEM(1,1,EXMEM);
+		MEM_c += MEM(1,EXMEM);
 		printInst(MEMWB.instruction);
 		printBuffer(MEMWB);
 
 		printf("%s\n", "Execute");
-		EX(1,1,&pgm_c);
+		EX_c += EX(1,1,&pgm_c);
 		printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
 		printBuffer(EXMEM);
 
 		printf("%s\n", "Instruction Decode");
-		ID(mips_reg, IFID);
+		ID_c += ID(mips_reg, IFID);
 		printInst(IDEX.instruction);
 		printBuffer(IDEX);
 
 		printf("%s\n", "Instruction Fetch");
-		IF(c,pgm_c,Inst_Mem);
+		IF_c += IF(c,pgm_c,Inst_Mem);
 		printInst(IFID.instruction);
 		printBuffer(IFID);
 
@@ -286,9 +286,13 @@ int main (int argc, char *argv[]){
 	double memtime = (100*MEM_cycle_count)/sim_cycle;
 	double wbtime = (100*WB_cycle_count)/sim_cycle;
 	*/
-	/*
-	printf("The percetage of time used by IF: %f \nThe percetage of time used by ID: %f \nThe percetage of time used by EX: %f \nThe percetage of time used by MEM: %f \nThe percetage of time used by WB: %f \n", iftime, idtime, extime, memtime, wbtime);
-	*/
+	
+	printf("The percetage of time used by IF: %d \n", IF_c);
+	printf("The percetage of time used by ID: %d \n", ID_c);
+	printf("The percetage of time used by EX: %d \n", EX_c);
+	printf("The percetage of time used by MEM: %d \n", MEM_c);
+	printf("The percetage of time used by WB: %d \n", WB_c);
+	
 	
 
 
@@ -955,8 +959,6 @@ int IF(int c, int pgm_c, struct inst *instruct){
         IFID.instruction = instruct[pgm_c];
         IFID.readyToRead = 1;
         IFID.readytoWrite = 0;
-        IFCTDN = 1;
-    	IFCTDN = IFCTDN + c;
     	return c;
 	}
 
@@ -964,34 +966,30 @@ int IF(int c, int pgm_c, struct inst *instruct){
 }
 
 int ID(long *registers, struct buffer IfId){  
-	if((IFID.instruction.rs != 0) && ((IFID.instruction.rs == IDEX.instruction.rd) || (IFID.instruction.rs  == EXMEM.instruction.rd) || (IFID.instruction.rs == MEMWB.instruction.rd))){
-		printf("RAW HAZARD, Register:%d\n", IFID.instruction.rs);
-		IDEX.instruction.opcode = noop;
-		IDEX.instruction.rd = 0;
-		IDEX.readyToRead = 1;
-		IDEX.readytoWrite = 0;
-
-		RAW_HAZARD = 1;
-		return 0;
-	}
-	if((IFID.instruction.rt != 0) && ((IFID.instruction.rt == IDEX.instruction.rd) || (IFID.instruction.rt  == EXMEM.instruction.rd) || (IFID.instruction.rt == MEMWB.instruction.rd))){
-		printf("RAW HAZARD, Register:%d\n", IFID.instruction.rt);
-		IDEX.instruction.opcode = noop;
-		IDEX.instruction.rd = 0;
-		IDEX.readyToRead = 1;
-		IDEX.readytoWrite = 0;
-
-		RAW_HAZARD = 1;
-		return 0;
-	}
-	RAW_HAZARD = 0;
 
 	if(IDEX.readytoWrite && IFID.readyToRead){
 
-		if(IFID.instruction.opcode == haltSimulation){//halt simulation instruction detected, propagate the halt instruction
-			IDEX = IFID;
-			return 1;
+
+		if((IFID.instruction.rs != 0) && ((IFID.instruction.rs == IDEX.instruction.rd) || (IFID.instruction.rs  == EXMEM.instruction.rd) || (IFID.instruction.rs == MEMWB.instruction.rd))){
+			printf("RAW HAZARD, Register:%d\n", IFID.instruction.rs);
+			IDEX.instruction.opcode = noop;
+			IDEX.instruction.rd = 0;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+
+			RAW_HAZARD = 1;
+			return 0;
+		}else if((IFID.instruction.rt != 0) && ((IFID.instruction.rt == IDEX.instruction.rd) || (IFID.instruction.rt  == EXMEM.instruction.rd) || (IFID.instruction.rt == MEMWB.instruction.rd))){
+			printf("RAW HAZARD, Register:%d\n", IFID.instruction.rt);
+			IDEX.instruction.opcode = noop;
+			IDEX.instruction.rd = 0;
+			IDEX.readyToRead = 1;
+			IDEX.readytoWrite = 0;
+
+			RAW_HAZARD = 1;
+			return 0;
 		}
+		RAW_HAZARD = 0;
 		
 		
 		switch(IfId.instruction.opcode){
@@ -1074,7 +1072,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 0;
 				IFID.readyToRead = 0;
-				return 1;//return IfId;
+				return 0;//return IfId;
 				
 			case noop:
 				IDEX = IfId;
@@ -1082,7 +1080,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
-				return 1;//return IfId;
+				return 0;//return IfId;
 			
 		}
 	}
@@ -1102,7 +1100,7 @@ int EX(int n, int m, int *p){
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
-		        return n;
+		        return 0;
 	    	case add:
 		        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
 		        EXMEM.wbReg = IDEX.instruction.rd;
@@ -1181,7 +1179,7 @@ int EX(int n, int m, int *p){
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 0;
 		        IDEX.readyToRead = 0;    	
-		    	return n;
+		    	return 0;
 	    	case mult:{
 	            int result;
 	            result = IDEX.instruction.rs*IDEX.instruction.rt;
@@ -1205,22 +1203,21 @@ int EX(int n, int m, int *p){
 }
 
 //takes previous buffer and return the total cycles taken so far
-int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem){//should take sim_cycle, c from command line and last buffer
-	
+int MEM(int mem_cycles, struct buffer ExeMem){//should take sim_cycle, c from command line and last buffer
+	int cycles;cycles = 0;
+
 	if(EXMEM.readyToRead && MEMWB.readytoWrite){
 		int address = ExeMem.instruction.rs + ExeMem.instruction.Imm;
 
 		if(ExeMem.instruction.opcode == sw){
 			ExeMem.instruction.rt = dataMemory[address];
 
-			cycles_counter += mem_cycles;
-			MEM_cycle_count += mem_cycles;
+			cycles += mem_cycles;
 
 		}else if(ExeMem.instruction.opcode == lw){
 			dataMemory[address] = ExeMem.instruction.rt; 
 
-			cycles_counter += mem_cycles;
-			MEM_cycle_count += mem_cycles;
+			cycles += mem_cycles;
 		}
 		MEMWB = ExeMem;
 		MEMWB.readyToRead = 1;
@@ -1229,27 +1226,26 @@ int MEM(int cycles_counter, int mem_cycles, struct buffer ExeMem){//should take 
 		EXMEM.readytoWrite = 1;
 		
 	}
-	return cycles_counter;
+	return cycles;
 
 
 }
 
 //takes previous buffer and returns total cycles taken so far
-int WB(int cycles_count, long *registers, struct buffer MemWb){
+int WB(long *registers, struct buffer MemWb){
+	int cycles;cycles = 0;
 
 	if(MEMWB.readyToRead){
 
 		if((MemWb.instruction.opcode >= add) && (MemWb.instruction.opcode <= mult)){
 			registers[MemWb.instruction.rd] = MemWb.data;
 
-			WB_cycle_count++;
-			cycles_count++;
+			cycles++;
 
 		}else if(MemWb.instruction.opcode == sw){
 			registers[MemWb.instruction.rd] = MemWb.instruction.rt;
 
-			WB_cycle_count++;
-			cycles_count++;
+			cycles++;
 		}
 
 		if(MemWb.instruction.opcode == haltSimulation){
@@ -1261,5 +1257,5 @@ int WB(int cycles_count, long *registers, struct buffer MemWb){
 	}
 
 
-	return cycles_count;
+	return cycles;
 }
