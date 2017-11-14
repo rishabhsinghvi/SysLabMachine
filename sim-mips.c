@@ -49,7 +49,7 @@ struct buffer
 	int address;
 	int wbReg;
 	int VALID;
-	long data;
+	int data;
 };
 
 struct buffer IDEX;
@@ -98,6 +98,10 @@ MEMWB.address = -1;
 MEMWB.wbReg = -1;
 MEMWB.VALID = 1;
 MEMWB.data = 0;
+}
+
+void printInst(struct inst a){
+	printf("\nopcode: %d\nrs:%d\nrt:%d\nrd:%d\nImm:%d\n\n", a.opcode, a.rs, a.rt,a.rd,a.Imm);
 }
 
 char *str_cat(char *dest, const char *src){
@@ -229,12 +233,46 @@ int main (int argc, char *argv[]){
 	Inst_Mem = readFile(input);
 	initLatches();
 
+	HALT_SIMULATION = 0;
+
+	printf("%s\n", "Instruction Fetch");
+	IF(c,pgm_c,Inst_Mem);
+	printInst(IFID.instruction);
+
+	printf("%s\n", "Instruction Decode");
+	ID(mips_reg, IFID);
+	printInst(IDEX.instruction);
+
+	printf("%s\n", "Execute");
+	EX(1,1);
+	printInst(EXMEM.instruction); printf("%d\n\n", EXMEM.data);
+
+	printf("%s\n", "MEM");
+	MEM(1,1,EXMEM);
+	printInst(MEMWB.instruction);
+
+	printf("%s\n", "WB");
+	WB(1, mips_reg, MEMWB);
+
+
+	pgm_c++;
+
+	int j;
+	for(j = 0; j < 32; j++){
+		printf("%d ", mips_reg[j]);
+		if((j+1)%4 == 0)
+			printf("\n");
+	}
+
+	/*
 	while(!HALT_SIMULATION){
+		IDEX = IF(c,pgm_c,Inst_Mem);
 
 
 
 
 
+		
 		sim_cycle = sim_cycle + IF(c, pgm_c, Inst_Mem);
 		if((BRANCH_PENDING!=0)||(RAW_HAZARD!=0))
 		//pgm_c = pgm_c -1;
@@ -243,9 +281,11 @@ int main (int argc, char *argv[]){
 		sim_cycle = sim_cycle + EX(n,m);
 		sim_cycle = sim_cycle + MEM(sim_cycle,c,EXMEM);
 		sim_cycle = sim_cycle + WB(1,mips_reg,MEMWB);
+		
 
 
 	}
+	*/
 
 
 
@@ -254,15 +294,16 @@ int main (int argc, char *argv[]){
  
 
 
-
+	/*
 	double iftime = (100*IFCTDN)/sim_cycle;
 	double idtime = (100*IDCTDN)/sim_cycle;
 	double extime = (100*EXCTDN)/sim_cycle;
 	double memtime = (100*MEM_cycle_count)/sim_cycle;
 	double wbtime = (100*WB_cycle_count)/sim_cycle;
-
+	*/
+	/*
 	printf("The percetage of time used by IF: %f \nThe percetage of time used by ID: %f \nThe percetage of time used by EX: %f \nThe percetage of time used by MEM: %f \nThe percetage of time used by WB: %f \n", iftime, idtime, extime, memtime, wbtime);
-
+	*/
 	
 
 
@@ -320,16 +361,6 @@ char *progScannner(char *c){
 
 	//printf("%s", ">");
 
-	/*
-	for (int i = strlen(ret); i >= 0; --i){
-		if(ret[i]!=' ' && ret!='\0'){
-			printf("%c", ret[i]);
-			break;
-		}
-
-	}
-	printf("%s\n", "<");
-	*/
 
 	/*
 	for (i = strlen(ret); i >= 0; --i){
@@ -954,11 +985,14 @@ int IF(int c, int pgm_c, struct inst *instruct){
 }
 
 struct buffer ID(long *registers, struct buffer IfId){  //please make sure that if opcode is 'halt_program' everything stops and control is returned to main()
+	/*
 	if(IfId.readyToRead == 0){
 		//not ready to read
 		IDEX.readyToRead = 0;
 		return IDEX;
 	}
+	*/
+
 	if(IfId.instruction.opcode == haltSimulation){
 	//halt simulation instruction detected, propagate the halt instruction
 	return IfId;
@@ -972,6 +1006,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 			IDEX = IfId;
 			return IfId;
 		case addi:
+			printf("%s\n", "ADDI");
 			IfId.instruction.rd = IfId.instruction.rt;
 			IfId.instruction.rs = registers[IfId.instruction.rs];
 			IfId.instruction.rt = registers[IfId.instruction.rt];
@@ -1019,6 +1054,7 @@ struct buffer ID(long *registers, struct buffer IfId){  //please make sure that 
 			return IfId;
 		
 	}
+	
 	
 
 }

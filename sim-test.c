@@ -36,10 +36,6 @@ int compare_instructions(struct inst a, struct inst b){
 	}
 }
 
-void printInst(struct inst a){
-	printf("\nopcode: %d\nrs:%d\nrt:%d\nrd:%d\nImm:%d\n\n", a.opcode, a.rs, a.rt,a.rd,a.Imm);
-}
-
 int ExampleTest(){
 	return 0 == 0;
 }
