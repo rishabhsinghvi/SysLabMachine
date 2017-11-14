@@ -35,8 +35,8 @@ long dataMemory[64]; //2kb of 32-bit words
 struct inst
 {
 	enum opcode opcode;
-	long rs;
-	long rt;
+	int rs;
+	int rt;
 	int rd;
 	int Imm;
 };
