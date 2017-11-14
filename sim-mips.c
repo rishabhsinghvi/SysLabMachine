@@ -129,6 +129,7 @@ struct inst *readFile(FILE* fp){
 	for (i = 0; i < lines; ++i){
 		fgets(line, 100, fp);
 		size_t len = strlen(line);
+		printf("%d \[%s\]\n", i,line);
 
 		instructions[i] = parser(regNumberConverter(progScannner(line)));
 	}
