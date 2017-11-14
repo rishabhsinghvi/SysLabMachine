@@ -980,7 +980,6 @@ int IF(int c, int pgm_c, struct inst *instruct){
         IFID.readyToRead = 1;
         IFCTDN = 1;
     IFCTDN = IFCTDN + c;
-    IFID.readyToRead=0;
     return c;
 }
 
