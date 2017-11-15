@@ -1061,6 +1061,7 @@ int ID(long *registers, struct buffer IfId){
 				return 1;//return IfId;
 				
 			case lw://i type
+				IfId.instruction.rd = IfId.instruction.rt;
 				IfId.instruction.rs = registers[IfId.instruction.rs];
 				IfId.instruction.rt = registers[IfId.instruction.rt];
 				IDEX = IfId;
