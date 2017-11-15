@@ -12,8 +12,9 @@
 int BRANCH_PENDING = 0;
 int RAW_HAZARD = 0;
 int HALT_SIMULATION = 0;
-
-int EXCTDN = 0;
+int IF_cycle_count = 0;
+int ID_cycle_count = 0;
+int EX_cycle_count = 0;
 int MEM_cycle_count = 0;
 int WB_cycle_count = 0;
 
@@ -281,15 +282,13 @@ int main (int argc, char *argv[]){
 				printf("\n");
 		}
 	}
-
-
  
 
 
 	/*
-	double iftime = (100*IFCTDN)/sim_cycle;
-	double idtime = (100*IDCTDN)/sim_cycle;
-	double extime = (100*EXCTDN)/sim_cycle;
+	double iftime = (100*IF_cycle_count)/sim_cycle;
+	double idtime = (100*ID_cycle_count)/sim_cycle;
+	double extime = (100*EX_cycle_count)/sim_cycle;
 	double memtime = (100*MEM_cycle_count)/sim_cycle;
 	double wbtime = (100*WB_cycle_count)/sim_cycle;
 	*/
@@ -967,10 +966,11 @@ int IF(int c, int pgm_c, struct inst *instruct){
         IFID.instruction = instruct[pgm_c];
         IFID.readyToRead = 1;
         IFID.readytoWrite = 0;
-    	return c;
+        IF_cycle_count = IF_cycle_count + c;
+        return c;
 	}
 
-	return 0;
+	return c;
 }
 
 int ID(long *registers, struct buffer IfId){  
@@ -984,18 +984,18 @@ int ID(long *registers, struct buffer IfId){
 			IDEX.instruction.rd = 0;
 			IDEX.readyToRead = 1;
 			IDEX.readytoWrite = 0;
-
+            ID_cycle_count++;
 			RAW_HAZARD = 1;
-			return 0;
+			return 1;
 		}else if((IFID.instruction.rt != 0) && ((IFID.instruction.rt == IDEX.instruction.rd) || (IFID.instruction.rt  == EXMEM.instruction.rd) || (IFID.instruction.rt == MEMWB.instruction.rd))){
 			printf("RAW HAZARD, Register:%d\n", IFID.instruction.rt);
 			IDEX.instruction.opcode = noop;
 			IDEX.instruction.rd = 0;
 			IDEX.readyToRead = 1;
 			IDEX.readytoWrite = 0;
-
+            ID_cycle_count++;
 			RAW_HAZARD = 1;
-			return 0;
+			return 1;
 		}
 		RAW_HAZARD = 0;
 		
@@ -1009,6 +1009,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
+                ID_cycle_count++;
 				return 1;//return IfId;
 			case addi: // i type
 				printf("%s\n", "ADDI");
@@ -1020,6 +1021,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
+                ID_cycle_count++;
 				return 1;//return IfId;
 				
 			case sub: // r type
@@ -1030,6 +1032,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
+                ID_cycle_count++;
 				return 1;//return IfId;
 				
 			case mult: //r type
@@ -1040,6 +1043,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
+                ID_cycle_count++;
 				return 1;//return IfId;
 				
 			case beq: //i type
@@ -1051,6 +1055,7 @@ int ID(long *registers, struct buffer IfId){
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
 				BRANCH_PENDING = 1;
+                ID_cycle_count++;
 				return 1;//return IfId;
 				
 			case lw://i type
@@ -1061,6 +1066,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
+                ID_cycle_count++;
 				return 1;//return IfId;
 			
 			case sw://i type
@@ -1072,6 +1078,7 @@ int ID(long *registers, struct buffer IfId){
 				IDEX.readytoWrite = 0;
 				IFID.readytoWrite = 1;
 				IFID.readyToRead = 0;
+                ID_cycle_count++;
 				return 1;//return IfId;
 				
 			case haltSimulation:
@@ -1092,9 +1099,7 @@ int ID(long *registers, struct buffer IfId){
 			
 		}
 	}
-	
-	
-
+    return 0;
 }
 
 int EX(int n, int m, int *p){
@@ -1108,6 +1113,7 @@ int EX(int n, int m, int *p){
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 		        return 0;
 	    	case add:
 		        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
@@ -1117,8 +1123,8 @@ int EX(int n, int m, int *p){
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
-		        EXCTDN = EXCTDN + n;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 		        //add to useful process count
 		        return n;
 	    	case addi:
@@ -1126,23 +1132,23 @@ int EX(int n, int m, int *p){
 		        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
 		        EXMEM.wbReg = IDEX.instruction.rt;
 		        EXMEM.address = -1;
-		        EXCTDN = EXCTDN + n;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 	        	return n;
 	    	case sub:
 		        EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
 		        EXMEM.wbReg = IDEX.instruction.rd;
 		        EXMEM.address = -1;  //so you know nothing needs to be written to memory!
-		        EXCTDN = EXCTDN + n;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 		        return n;
 	    	case beq:
 		        BRANCH_PENDING=1; //maybe should be done in the ID stage
@@ -1152,32 +1158,32 @@ int EX(int n, int m, int *p){
 		        EXMEM.wbReg = -1;  //do not write anything to reg file
 		        EXMEM.address = -1;
 		        BRANCH_PENDING = 0;
-		        EXCTDN = EXCTDN + n;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 		        return n;
 			case lw:
 		        EXMEM.wbReg = IDEX.instruction.rt; 
 		        EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
-		        EXCTDN = EXCTDN + n;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 		        return n;
 			case sw:
 		        EXMEM.data = IDEX.instruction.rt;
 		        EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
-		        EXCTDN = EXCTDN + n;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
 		        EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + n;
 		        return n; 
 	     	case haltSimulation:
 		    	EXMEM.instruction = IDEX.instruction;
@@ -1199,8 +1205,8 @@ int EX(int n, int m, int *p){
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
 		        IDEX.readyToRead = 0;
-	            EXCTDN = EXCTDN + m;
 	            EXMEM.instruction = IDEX.instruction;
+                EX_cycle_count = EX_cycle_count + m;
 	            return m;
 	        }
 	    }
