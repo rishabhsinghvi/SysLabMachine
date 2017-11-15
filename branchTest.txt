@@ -3,3 +3,4 @@ addi $2 $1 0
 beq $1 $2 1
 addi $2 $2 4
 addi $3 $2 0
+haltSimulation
