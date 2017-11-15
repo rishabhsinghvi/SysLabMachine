@@ -186,7 +186,7 @@ int parser_Test4(){
 	char *line = regNumberConverter(progScanner("lw $s0 4 $t0"));
 	printf("%s\n", line);
 
-	struct inst peter = parser(regNumberConverter("lw $s0 8 $t0"));
+	struct inst peter = parser(regNumberConverter("lw $s0 4 $t0"));
 	printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
@@ -225,7 +225,7 @@ int parser_Test6(){
 int parser_Test7(){
 	struct inst test = {lw, 8, 16, 0, 24};
 
-	printf("%s\n", progScanner("lw $s0, 8($t0)"));
+	printf("%s\n", progScanner("lw $s0, 24($t0)"));
 	char *line = regNumberConverter(progScanner("lw $s0, 24($t0)"));
 	printf("[%s]\n", line);
 
@@ -249,7 +249,7 @@ int main(int argc, char const *argv[])
 	printf("MEM Test: %d\n\n", MEM_Test());
 	printf("WB Test: %d\n\n", WB_Test());
 	printf("Number of Lines Test 1: %d\n\n", numLines_test1());
-	printf("File Reader Test 1: %d\n\n", fileRead_test1());
+	//printf("File Reader Test 1: %d\n\n", fileRead_test1());
 	printf("Program Scanner Test 1: %d\n\n", progScanner_Test1());
 	printf("Program Scanner Test 2: %d\n\n", progScanner_Test2());
 	printf("Program Scanner Test 3: %d\n\n", progScanner_Test3());
