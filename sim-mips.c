@@ -242,6 +242,7 @@ int main (int argc, char *argv[]){
 	int IF_c,ID_c,EX_c,MEM_c,WB_c; 
 	IF_c = 0; ID_c = 0; EX_c = 0; MEM_c = 0; WB_c = 0;
 
+
 	while(!HALT_SIMULATION){
 		printf("\n\n\nPROGRAM COUNT:%d    ##################\n",pgm_c);
 
@@ -282,6 +283,7 @@ int main (int argc, char *argv[]){
 				printf("\n");
 		}
 	}
+
  
 
 
@@ -1224,12 +1226,15 @@ int MEM(int mem_cycles, struct buffer ExeMem){//should take sim_cycle, c from co
 		int address = ExeMem.instruction.rs + ExeMem.instruction.Imm;
 
 		if(ExeMem.instruction.opcode == sw){
-			ExeMem.instruction.rt = dataMemory[address];
+			//ExeMem.instruction.rt = dataMemory[address];
+			dataMemory[address] = ExeMem.instruction.rt;
+
 
 			cycles += mem_cycles;
 
 		}else if(ExeMem.instruction.opcode == lw){
-			dataMemory[address] = ExeMem.instruction.rt; 
+			//dataMemory[address] = ExeMem.instruction.rt; 
+			ExeMem.instruction.rt = dataMemory[address];
 
 			cycles += mem_cycles;
 		}
@@ -1256,7 +1261,7 @@ int WB(long *registers, struct buffer MemWb){
 
 			cycles++;
 
-		}else if(MemWb.instruction.opcode == sw){
+		}else if(MemWb.instruction.opcode == lw){
 			registers[MemWb.instruction.rd] = MemWb.instruction.rt;
 
 			cycles++;

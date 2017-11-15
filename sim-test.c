@@ -104,8 +104,6 @@ int progScanner_Test1(){
 
 	char *testStr = progScanner("add	$s0,,$s1         ,     $s2");
 
-	printf("Here is the string:%s\n", testStr);
-
 	return strcmp(testStr, "add $s0 $s1 $s2") == 0;
 }
 
@@ -183,9 +181,9 @@ int parser_Test3(){
 }
 
 int parser_Test4(){
-	struct inst test = {lw, 8, 16, 0, 8};
+	struct inst test = {lw, 8, 16, 0, 4};
 
-	char *line = regNumberConverter(progScanner("lw $s0 8 $t0"));
+	char *line = regNumberConverter(progScanner("lw $s0 4 $t0"));
 	printf("%s\n", line);
 
 	struct inst peter = parser(regNumberConverter("lw $s0 8 $t0"));
@@ -225,10 +223,10 @@ int parser_Test6(){
 }
 
 int parser_Test7(){
-	struct inst test = {lw, 8, 16, 0, 8};
+	struct inst test = {lw, 8, 16, 0, 24};
 
 	printf("%s\n", progScanner("lw $s0, 8($t0)"));
-	char *line = regNumberConverter(progScanner("lw $s0, 8($t0)"));
+	char *line = regNumberConverter(progScanner("lw $s0, 24($t0)"));
 	printf("[%s]\n", line);
 
 
