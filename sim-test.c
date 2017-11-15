@@ -9,7 +9,7 @@ int ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: No
 int EX(int n, int m);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
-char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
+char *progScanner(char *c); 				//author: Peter,	tester: Noah,  tested
 char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
@@ -194,7 +194,7 @@ int numLines_test1(){
 	FILE *fp;fp = fopen("test1.txt", "r");
 
 	//printf("%s\n", "open file");
-	return numLines(fp) == 5;
+	return numLines(fp) == 7;
 
 	fclose(fp);	
 }
@@ -214,37 +214,40 @@ int fileRead_test1(){
 		t += compare_instructions(fileC[i], test[i]);
 	}
 
-	return t == 5;
 	fclose(fp);
-	
-	return 0;
-	
+
+	printf("t=%d\n", t);
+	return t == 7;	
 }
 
 
 int progScanner_Test1(){
 
-	return strcmp(progScannner("add	$s0,,$s1         ,     $s2"), "add $s0 $s1 $s2") == 0;
+	char *testStr = progScanner("add	$s0,,$s1         ,     $s2");
+
+	printf("Here is the string:%s\n", testStr);
+
+	return strcmp(testStr, "add $s0 $s1 $s2") == 0;
 }
 
 int progScanner_Test2(){
 
-	return strcmp(progScannner("lw $s0, 8($t0)"), "lw $s0 8 $t0") == 0;
+	return strcmp(progScanner("lw $s0, 8($t0)"), "lw $s0 8 $t0") == 0;
 }
 
 int progScanner_Test3(){
 
-	return strcmp(progScannner("lw 			$s0   4($t0)"), "lw $s0 4 $t0") == 0;
+	return strcmp(progScanner("lw 			$s0   4($t0)"), "lw $s0 4 $t0") == 0;
 }
 
 int progScanner_Test4(){
 
-	return strcmp(progScannner("add     $s0,      $s1,,,,,,$s2"), "add $s0 $s1 $s2") == 0;
+	return strcmp(progScanner("add     $s0,      $s1,,,,,,$s2"), "add $s0 $s1 $s2") == 0;
 }
 
 int progScanner_Test5(){
 
-	return strcmp(progScannner("beq $t0 $t1 1000"), "beq $t0 $t1 1000") == 0;
+	return strcmp(progScanner("beq $t0 $t1 1000"), "beq $t0 $t1 1000") == 0;
 }
 
 int regNumberConverter_Test1(){
@@ -273,13 +276,13 @@ int regNumberConverter_Test6(){
 
 
 int parser_Test1(){
-	struct inst test = {add, 16, 17, 18, 0};
+	struct inst test = {add, 17, 18, 16, 0};
 
 	return compare_instructions(test, parser("add 16 17 18"));
 }
 
 int parser_Test2(){
-	struct inst test = {lw, 17, 18, 0, 4};
+	struct inst test = {lw, 18, 17, 0, 4};
 
 	struct inst peter = parser("lw 17 4 18");
 
@@ -289,7 +292,7 @@ int parser_Test2(){
 }
 
 int parser_Test3(){
-	struct inst test = {beq, 8, 9, 0, 100};
+	struct inst test = {beq, 9, 8, 0, 100};
 
 	char *line = regNumberConverter("beq 8 9 100");
 	printf("%s\n", line);
@@ -301,9 +304,9 @@ int parser_Test3(){
 }
 
 int parser_Test4(){
-	struct inst test = {lw, 16, 8, 0, 8};
+	struct inst test = {lw, 8, 16, 0, 8};
 
-	char *line = regNumberConverter(progScannner("lw $s0 8 $t0"));
+	char *line = regNumberConverter(progScanner("lw $s0 8 $t0"));
 	printf("%s\n", line);
 
 	struct inst peter = parser(regNumberConverter("lw $s0 8 $t0"));
@@ -314,10 +317,10 @@ int parser_Test4(){
 }
 
 int parser_Test5(){
-	struct inst test = {sub, 16, 17, 18, 0};
+	struct inst test = {sub, 17, 18, 16, 0};
 
-	printf("%s\n", progScannner("sub $s0, $s1, $s2"));
-	char *line = regNumberConverter(progScannner("sub $s0, $s1, $s2"));
+	printf("%s\n", progScanner("sub $s0, $s1, $s2"));
+	char *line = regNumberConverter(progScanner("sub $s0, $s1, $s2"));
 	printf("%s\n", line);
 
 	struct inst peter = parser(line);
@@ -328,10 +331,10 @@ int parser_Test5(){
 }
 
 int parser_Test6(){
-	struct inst test = {sub, 18, 19, 20, 0};
+	struct inst test = {sub, 19, 20, 18, 0};
 
-	printf("%s\n", progScannner("sub $s2, $s3, $s4"));
-	char *line = regNumberConverter(progScannner("sub $s2, $s3, $s4"));
+	printf("%s\n", progScanner("sub $s2, $s3, $s4"));
+	char *line = regNumberConverter(progScanner("sub $s2, $s3, $s4"));
 	printf("%s\n", line);
 
 
@@ -343,10 +346,10 @@ int parser_Test6(){
 }
 
 int parser_Test7(){
-	struct inst test = {lw, 16, 8, 0, 8};
+	struct inst test = {lw, 8, 16, 0, 8};
 
-	printf("%s\n", progScannner("lw $s0, 8($t0)"));
-	char *line = regNumberConverter(progScannner("lw $s0, 8($t0)"));
+	printf("%s\n", progScanner("lw $s0, 8($t0)"));
+	char *line = regNumberConverter(progScanner("lw $s0, 8($t0)"));
 	printf("[%s]\n", line);
 
 
@@ -368,7 +371,7 @@ int main(int argc, char const *argv[])
 	printf("MEM Test: %d\n\n", MEM_Test());
 	printf("WB Test: %d\n\n", WB_Test());
 	printf("Number of Lines Test 1: %d\n\n", numLines_test1());
-	printf("File Reader Test 1: %d\n\n", fileRead_test1());
+	//printf("File Reader Test 1: %d\n\n", fileRead_test1());
 	printf("Program Scanner Test 1: %d\n\n", progScanner_Test1());
 	printf("Program Scanner Test 2: %d\n\n", progScanner_Test2());
 	printf("Program Scanner Test 3: %d\n\n", progScanner_Test3());

@@ -57,7 +57,7 @@ int ID(long *registers, struct buffer IfId);								//author: Aleksa,	tester: No
 int EX(int n, int m, int *p);						//author: Noah,		tester: Aleksa, Peter, Done in testing
 int MEM(int mem_cycles, struct buffer ExeMem); 	//author: Peter,	tester: Aleksa
 int WB(long *registers, struct buffer MemWb);					//author: Aleksa,	tester: Noah
-char *progScannner(char *c); 				//author: Peter,	tester: Noah,  tested
+char *progScanner(char *c); 				//author: Peter,	tester: Noah,  tested
 char *regNumberConverter(char *prog); 		//author: Aleksa,	tester:	Peter, tested
 struct inst parser(char *input);			//author: Noah,		tester: Peter, Done
 //main  									//author: Peter
@@ -128,6 +128,13 @@ int str_comp(char str1[], char str2[]){
 		return -1;
 }
 
+int str_len(char str[]){
+	int i;
+	for(i = 0; str[i] != '\0';++i);
+
+	return i;
+}
+
 int numLines(FILE* fp){
 	int lines, ch;lines = 0;
 
@@ -155,9 +162,9 @@ struct inst *readFile(FILE* fp){
 	for (i = 0; i < lines; ++i){
 		fgets(line, 100, fp);
 		size_t len = strlen(line);
-		printf("%d [%s]\n", i,regNumberConverter(progScannner(line)));
+		printf("%d [%s]\n", i,regNumberConverter(progScanner(line)));
 
-		instructions[i] = parser(regNumberConverter(progScannner(line)));
+		instructions[i] = parser(regNumberConverter(progScanner(line)));
 	}
 
 	return instructions;
@@ -286,7 +293,7 @@ int main (int argc, char *argv[]){
 	double memtime = (100*MEM_cycle_count)/sim_cycle;
 	double wbtime = (100*WB_cycle_count)/sim_cycle;
 	*/
-	
+	IF_c--;
 	printf("The percetage of time used by IF: %d \n", IF_c);
 	printf("The percetage of time used by ID: %d \n", ID_c);
 	printf("The percetage of time used by EX: %d \n", EX_c);
@@ -299,9 +306,12 @@ int main (int argc, char *argv[]){
 }
 
 //
-char *progScannner(char *c){
+char *progScanner(char *c){
 
-	char *ret; ret = (char *)malloc(strlen(c));
+	//char *ret; ret = (char*)calloc(strlen(c)+1, sizeof(char));
+	int len = str_len(c) + 1;
+	char *ret; ret = (char*)malloc((len)*sizeof(char));
+	strcpy(ret,"");
 	char t[2];
 	char space,open;open = 0;space=1;
 
@@ -341,14 +351,12 @@ char *progScannner(char *c){
 			open = 0;
 		}
 
-
+		//printf("%s\n",ret);
 	}
 	if(open == 1){
 		printf("%s\n", "Mismatched paranthesis");
 		exit(0);
 	}
-
-	//printf("%s", ">");
 
 
 	/*
@@ -361,13 +369,12 @@ char *progScannner(char *c){
 
 	}
 	*/
-	//printf("%s-%s\n", "<",ret);
-
+	
 	if(ret[strlen(ret)-1] == ' ')
 		ret[strlen(ret)-1] = '\0';
 
 	return ret;
-	free(ret);
+
 }
 
 char *regNumberConverter(char *prog){
