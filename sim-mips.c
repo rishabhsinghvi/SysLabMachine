@@ -19,7 +19,7 @@ int WB_cycle_count = 0;
 
 enum opcode {add, addi, sub, mult, beq, lw, sw, haltSimulation, noop};
 
-long dataMemory[64]; //2kb of 32-bit words
+long dataMemory[512]; //2kb of 32-bit words
 
 struct inst
 {
@@ -614,12 +614,13 @@ struct inst parser(char *input){
 	commandArgs[argumentCount][column] = '\0';
 	argumentCount++;
 	
-	
+	/*
 	int v = 0;
 	for (v = 0; v < argumentCount; v++){
 		printf("TEMPARGS[%s]\n",commandArgs[v]);
 		
 	}
+	*/
 	
 	
 	

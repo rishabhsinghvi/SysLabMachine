@@ -48,118 +48,6 @@ int ID_Test(){
 	return 0;
 }
 
-/*
-int ID_Test(){
-    struct buffer input;
-    long* reg_file = {88,188,288,388,488,588,688,788,888,988,1088,1188,1288,1388,1488,1588,1688,1788,1888,1988,2088,2188,2288,2388,2488,2588,2688,2788,2888,2988,3088,3188};
-    //addition case
-    input.instruction.opcode = 0;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    input.instruction.rd = 24;
-    struct buffer output;
-    output = ID(reg_file, input);
-    
-    int result = reg_file[2] - output.instruction.rs;
-    result = result + (reg_file[4] - output.instruction.rt);
-    result = result + (24 - output.instruction.rd);
-    
-    //subtration case
-    input.instruction.opcode = 2;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    input.instruction.rd = 24;
-    output = ID(reg_file, input);
-    
-    result = result + (reg_file[2] - output.instruction.rs);
-    result = result + (reg_file[4] - output.instruction.rt);
-    result = result + (24 - output.instruction.rd);
-    
-    //multiplication case
-    input.instruction.opcode = 3;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    input.instruction.rd = 24;
-    output = ID(reg_file, input);
-    
-    result = reg_file[2] - output.instruction.rs;
-    result = result + (reg_file[4] - output.instruction.rt);
-    result = result + (24 - output.instruction.rd);
-    
-    //addi case
-    input.instruction.opcode = 1;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    input.instruction.Imm = 24;
-    output = ID(reg_file, input);
-    
-    result = reg_file[2] - output.instruction.rs;
-    result = result + (2 - output.instruction.rt);
-    result = result + (24 - output.instruction.Imm);
-    
-    //beq case
-    input.instruction.opcode = 1;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    output = ID(reg_file, input);
-    
-    result = reg_file[2] - output.instruction.rs;
-    result = result + (2 - output.instruction.rt);
-    result = result + (24 - output.instruction.Imm);
-    
-    //lw case
-    input.instruction.opcode = 1;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    input.instruction.Imm = 24;
-    output = ID(reg_file, input);
-    
-    result = reg_file[2] - output.instruction.rs;
-    result = result + (2 - output.instruction.rt);
-    result = result + (24 - output.instruction.Imm);
-    
-    //sw case
-    input.instruction.opcode = 1;
-    input.instruction.rs = 2;
-    input.instruction.rt = 4;
-    input.instruction.Imm = 24;
-    output = ID(reg_file, input);
-    
-    result = reg_file[2] - output.instruction.rs;
-    result = result + (2 - output.instruction.rt);
-    result = result + (24 - output.instruction.Imm);
-    
-	return result;
-}
-*/
-/*
-int EX_Test_Add(){
-	//addition test
-		IDEX.instruction.opcode = 0;
-		IDEX.instruction.rs = 4;
-		IDEX.instruction.rt = 3;
-		int i = EX(4,5);
-
-	return EXMEM.data - 7;
-}
-
-int EX_Test_Sub(){
-	//subtration test
-	IDEX.instruction.opcode = 1;
-	IDEX.instruction.rs = 4;
-	IDEX.instruction.rt = 3;
-	int i = EX(4,5);
-
-	return EXMEM.data - 1;
-}
-
-int EX_Test_Addi(){
-	//add-immediate test
-	IDEX.instruction.opcode = 2;
-	
-}
-*/
-
 int EX_Test(){
 	return 0;
 }
@@ -170,21 +58,7 @@ int MEM_Test(){
 
 
 int WB_Test(){
-	/*
-    struct buffer input;
-    int result;
-    long* reg_file = {88,188,288,388,488,588,688,788,888,988,1088,1188,1288,1388,1488,1588,1688,1788,1888,1988,2088,2188,2288,2388,2488,2588,2688,2788,2888,2988,3088,3188};
-    input.instruction.opcode = add;
-    input.data = 88;
-    for(int i=0;i<32;i++){
-        input.wbReg = i;
-        int count = WB(0,reg_file,input);
-    }
-    for(int i=0;i<32;i++){
-        result = result + reg_file[i]-88;
-    }
-	return result;
-	*/
+
 	return 0;
 }
 
@@ -206,17 +80,22 @@ int fileRead_test1(){
 	fp = fopen("test1.txt", "r");
 
 	struct inst *fileC = readFile(fp);
-	struct inst test[5] = {{1, 1, 0, 0, 10}, {1,1,0,0,20},{1,2,0,0,30},{3,3,1,2,0},{7,0,0,0,0}};
+	struct inst test[7] = {{addi, 0, 1, 0, 10}, {addi,0,1,0,20},{addi,0,2,0,30},{mult,1,2,3,0},{sub,3,2,4,0},{add,2,1,1,0},{7,0,0,0,0}};
 	//printInst(fileC[0]);
 
 	int i,t;t=0;
-	for(i = 0; i < 5; i++){
-		t += compare_instructions(fileC[i], test[i]);
+	for(i = 0; i < 7; i++){
+		if(compare_instructions(fileC[i], test[i])){
+			t++;
+		}else{
+		//printInst(fileC[i]);
+		}
+		//t += compare_instructions(fileC[i], test[i]);
 	}
 
 	fclose(fp);
 
-	printf("t=%d\n", t);
+	//printf("t=%d\n", t);
 	return t == 7;	
 }
 
@@ -324,7 +203,7 @@ int parser_Test5(){
 	printf("%s\n", line);
 
 	struct inst peter = parser(line);
-	//printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	printf("%d  %d  %d  %d  %d\n", peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -339,7 +218,7 @@ int parser_Test6(){
 
 
 	struct inst peter = parser(line);
-	//printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
+	printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -354,6 +233,7 @@ int parser_Test7(){
 
 
 	struct inst peter = parser(line);
+	printf("%d  %d  %d  %d  %d\n",peter.opcode, peter.rs, peter.rt, peter.rd, peter.Imm);
 
 
 	return compare_instructions(test, peter);
@@ -371,7 +251,7 @@ int main(int argc, char const *argv[])
 	printf("MEM Test: %d\n\n", MEM_Test());
 	printf("WB Test: %d\n\n", WB_Test());
 	printf("Number of Lines Test 1: %d\n\n", numLines_test1());
-	//printf("File Reader Test 1: %d\n\n", fileRead_test1());
+	printf("File Reader Test 1: %d\n\n", fileRead_test1());
 	printf("Program Scanner Test 1: %d\n\n", progScanner_Test1());
 	printf("Program Scanner Test 2: %d\n\n", progScanner_Test2());
 	printf("Program Scanner Test 3: %d\n\n", progScanner_Test3());
