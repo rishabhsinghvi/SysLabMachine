@@ -363,7 +363,7 @@ char *progScanner(char *c){
 	
 	for (i = strlen(ret); i >= 0; --i){
 		if(ret[i] >='0' && ret[i] <= '9'){
-			printf("%c", ret[i]);
+			//printf("%c", ret[i]);
 			ret[i+1]='\0';
 			break;
 		}
