@@ -102,7 +102,7 @@ int fileRead_test1(){
 
 int progScanner_Test1(){
 
-	char *testStr = progScanner("add	$s0,,$s1         ,     $s2");
+	char *testStr = progScanner("add     $s0,,$s1         ,     $s2");
 
 	return strcmp(testStr, "add $s0 $s1 $s2") == 0;
 }

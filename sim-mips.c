@@ -343,11 +343,11 @@ int main (int argc, char *argv[]){
 char *progScanner(char *c){
 
 	//char *ret; ret = (char*)calloc(strlen(c)+1, sizeof(char));
-	int len = str_len(c) + 1;
-	char *ret; ret = (char*)malloc((len)*sizeof(char));
-	strcpy(ret,"");
+	int len,paren; paren = 0;
+	len = str_len(c) + 1;
+	char *ret; ret = (char*)malloc((len)*sizeof(char));strcpy(ret,"");
 	char t[2];
-	char space,open;open = 0;space=1;
+	char space;space=0;
 
 	int i;
 	for (i = 0; i < strlen(c); i++){
@@ -356,52 +356,49 @@ char *progScanner(char *c){
 			return ret;
 
 		if( ('a' <= c[i] && c[i] <= 'z') || ('A' <= c[i] && c[i] <= 'Z') || ('0' <= c[i] && c[i] <= '9') || c[i] == '$'){
+			
+			if(space){
+				t[0] = ' ';
+				t[1] = '\0';
+				str_cat(ret, t);
+			}
+
+
 			t[0] = c[i];
 			t[1] = '\0';
 			str_cat(ret, t);
 
 			space = 0;
-		}else{
-			if(space == 0 && open==0){
-				t[0] = ' ';
-				t[1] = '\0';
-				str_cat(ret, t);
-			}
+		}else if((c[i] == ' ') || (c[i] == ',') || (c[i] == '(')){
 			space = 1;
 		}
 
 
 		if(c[i] == '('){
-			if(open == 1){
-				printf("%s\n", "Mismatched paranthesis");
-				exit(0);
-			}
-			open = 1;
+			paren++;
 		}else if(c[i] == ')'){
-			if(open == 0){
-				printf("%s\n", "Mismatched paranthesis");
-				exit(0);
-			}
-			open = 0;
+			paren--;
 		}
 
 		//printf("%s\n",ret);
 	}
-	if(open == 1){
+
+	if(paren != 0){
 		printf("%s\n", "Mismatched paranthesis");
 		exit(0);
 	}
 
 
-	
+	/*
 	for (i = strlen(ret); i >= 0; --i){
 		if(ret[i] >='0' && ret[i] <= '9'){
-			//printf("%c", ret[i]);
+			printf("LAST LETTER:%c\n", ret[i]);
 			ret[i+1]='\0';
 			break;
 		}
 
 	}
+	*/
 	
 	
 	if(ret[strlen(ret)-1] == ' ')
