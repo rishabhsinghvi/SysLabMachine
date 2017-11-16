@@ -169,7 +169,7 @@ struct inst *readFile(FILE* fp){
 	}
 
 	return instructions;
-	free(instructions);
+	//free(instructions);
 }
 
 
