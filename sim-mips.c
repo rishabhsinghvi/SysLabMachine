@@ -228,7 +228,7 @@ int main (int argc, char *argv[]){
 		exit(0);
 	}
 	//initialize registers and program counter
-	if(sim_mode==1){
+	if(sim_mode==1 || sim_mode==0){
 		for (i=0;i<REG_NUM;i++){
 			mips_reg[i]=0;
 		} 
@@ -250,12 +250,12 @@ int main (int argc, char *argv[]){
 		WB_c += WB(mips_reg, MEMWB);
 
 		printf("%s\n", "MEM");
-		MEM_c += MEM(1,EXMEM);
+		MEM_c += MEM(m,EXMEM);
 		printInst(MEMWB.instruction);
 		printBuffer(MEMWB);
 
 		printf("%s\n", "Execute");
-		EX_c += EX(1,1,&pgm_c);
+		EX_c += EX(n,m,&pgm_c);
 		printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
 		printBuffer(EXMEM);
 
@@ -275,35 +275,68 @@ int main (int argc, char *argv[]){
 			pgm_c++;
 		}
 
-
+		/*
 		int j;
 		for(j = 0; j < 32; j++){
 			printf("%d ", mips_reg[j]);
 			if((j+1)%4 == 0)
 				printf("\n");
 		}
+		*/
+		
+
+		//output code 2: the following code will output the register 
+	        //value to screen at every cycle and wait for the ENTER key
+	        //to be pressed; this will make it proceed to the next cycle 
+		
+		if(sim_mode==1){
+			printf("cycle: %d register value: ",sim_cycle);
+			for (i=1;i<REG_NUM;i++){
+				printf("%d  ",mips_reg[i]);
+			}
+			printf("program counter: %d\n",pgm_c);
+			printf("press ENTER to continue\n");
+			while(getchar() != '\n');
+		}
+		
+		sim_cycle+=1;
+		
+
+
 	}
 
  
 
 
-	/*
-	double iftime = (100*IF_cycle_count)/sim_cycle;
-	double idtime = (100*ID_cycle_count)/sim_cycle;
-	double extime = (100*EX_cycle_count)/sim_cycle;
-	double memtime = (100*MEM_cycle_count)/sim_cycle;
-	double wbtime = (100*WB_cycle_count)/sim_cycle;
-	*/
-	IF_c--;
-	printf("The percetage of time used by IF: %d \n", IF_c);
-	printf("The percetage of time used by ID: %d \n", ID_c);
-	printf("The percetage of time used by EX: %d \n", EX_c);
-	printf("The percetage of time used by MEM: %d \n", MEM_c);
-	printf("The percetage of time used by WB: %d \n", WB_c);
-	
-	
+
+	IF_c -= c;//remove cycle count for halt sim
+
+	double ifUtil, idUtil, exUtil, memUtil, wbUtil;
+	ifUtil = (IF_c*1.0)/sim_cycle;
+	idUtil = (ID_c*1.0)/sim_cycle;
+	exUtil = (EX_c*1.0)/sim_cycle;
+	memUtil = (MEM_c*1.0)/sim_cycle;
+	wbUtil = (WB_c*1.0)/sim_cycle;	
 
 
+	if(sim_mode==0){
+		fprintf(output,"program name: %s\n",argv[5]);
+		fprintf(output,"stage utilization: %f  %f  %f  %f  %f \n",
+                             ifUtil, idUtil, exUtil, memUtil, wbUtil);
+                     // add the (double) stage_counter/sim_cycle for each 
+                     // stage following sequence IF ID EX MEM WB
+		
+		fprintf(output,"register values ");
+		for (i=1;i<REG_NUM;i++){
+			fprintf(output,"%d  ",mips_reg[i]);
+		}
+		fprintf(output,"%d\n",pgm_c);
+	
+	}
+	//close input and output files at the end of the simulation
+	fclose(input);
+	fclose(output);
+	return 0;
 }
 
 //
@@ -977,7 +1010,7 @@ int IF(int c, int pgm_c, struct inst *instruct){
 
 int ID(long *registers, struct buffer IfId){  
 
-	if(IDEX.readytoWrite && IFID.readyToRead){
+	if(IDEX.readytoWrite && IFID.readyToRead && !BRANCH_PENDING){
 
 
 		if((IFID.instruction.rs != 0) && ((IFID.instruction.rs == IDEX.instruction.rd) || (IFID.instruction.rs  == EXMEM.instruction.rd) || (IFID.instruction.rs == MEMWB.instruction.rd))){
@@ -1064,6 +1097,11 @@ int ID(long *registers, struct buffer IfId){
 				IfId.instruction.rd = IfId.instruction.rt;
 				IfId.instruction.rs = registers[IfId.instruction.rs];
 				IfId.instruction.rt = registers[IfId.instruction.rt];
+				if(IfId.instruction.Imm%4 != 0){
+					printf("Misaligned Memory\n");
+					exit(0);
+				}
+
 				IDEX = IfId;
 				IDEX.readyToRead = 1;
 				IDEX.readytoWrite = 0;
@@ -1076,6 +1114,11 @@ int ID(long *registers, struct buffer IfId){
 				IfId.instruction.rd = IfId.instruction.rt;
 				IfId.instruction.rs = registers[IfId.instruction.rs];
 				IfId.instruction.rt = registers[IfId.instruction.rt];
+				if(IfId.instruction.Imm%4 != 0){
+					printf("Misaligned Memory\n");
+					exit(0);
+				}
+
 	            IDEX = IfId;
 				IDEX.readyToRead = 1;
 				IDEX.readytoWrite = 0;
