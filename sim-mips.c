@@ -163,7 +163,7 @@ struct inst *readFile(FILE* fp){
 	for (i = 0; i < lines; ++i){
 		fgets(line, 100, fp);
 		size_t len = strlen(line);
-		printf("%d [%s]\n", i,regNumberConverter(progScanner(line)));
+		printf("%d >%s< [%s]\n", i,progScanner(line),regNumberConverter(progScanner(line)));
 
 		instructions[i] = parser(regNumberConverter(progScanner(line)));
 	}
