@@ -1,3 +1,0 @@
-program name: test1.txt
-stage utilization: 0.941176  0.705882  0.352941  0.000000  0.352941 
-register values 50  30  600  570  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  11

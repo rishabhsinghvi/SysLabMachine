@@ -163,7 +163,7 @@ struct inst *readFile(FILE* fp){
 	for (i = 0; i < lines; ++i){
 		fgets(line, 100, fp);
 		size_t len = strlen(line);
-		printf("%d >%s< [%s]\n", i,progScanner(line),regNumberConverter(progScanner(line)));
+		//printf("%d >%s< [%s]\n", i,progScanner(line),regNumberConverter(progScanner(line)));
 
 		instructions[i] = parser(regNumberConverter(progScanner(line)));
 	}
@@ -180,7 +180,7 @@ int main (int argc, char *argv[]){
 	long mips_reg[REG_NUM];
 	long pgm_c=0;//program counter
 	long sim_cycle=0;//simulation cycle counter
-	//define your own counter for the usage of each pipeline stage here
+	int IF_c,ID_c,EX_c,MEM_c,WB_c;
 
 
 
@@ -238,36 +238,35 @@ int main (int argc, char *argv[]){
 	//start your code from here **************************************************
 	struct inst *Inst_Mem;
 	Inst_Mem = readFile(input);
-	initLatches();HALT_SIMULATION = 0;
-	int IF_c,ID_c,EX_c,MEM_c,WB_c; 
+	initLatches();HALT_SIMULATION = 0; 
 	IF_c = 0; ID_c = 0; EX_c = 0; MEM_c = 0; WB_c = 0;
 
 
 	while(!HALT_SIMULATION){
-		printf("\n\n\nPROGRAM COUNT:%d    ##################\n",pgm_c);
+		//printf("\n\n\nPROGRAM COUNT:%d    ##################\n",pgm_c);
 
-		printf("%s\n", "WB");
+		//printf("%s\n", "WB");
 		WB_c += WB(mips_reg, MEMWB);
 
-		printf("%s\n", "MEM");
+		//printf("%s\n", "MEM");
 		MEM_c += MEM(m,EXMEM);
-		printInst(MEMWB.instruction);
-		printBuffer(MEMWB);
+		//printInst(MEMWB.instruction);
+		//printBuffer(MEMWB);
 
-		printf("%s\n", "Execute");
+		//printf("%s\n", "Execute");
 		EX_c += EX(n,m,&pgm_c);
-		printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
-		printBuffer(EXMEM);
+		//printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
+		//printBuffer(EXMEM);
 
-		printf("%s\n", "Instruction Decode");
+		//printf("%s\n", "Instruction Decode");
 		ID_c += ID(mips_reg, IFID);
-		printInst(IDEX.instruction);
-		printBuffer(IDEX);
+		//printInst(IDEX.instruction);
+		//printBuffer(IDEX);
 
-		printf("%s\n", "Instruction Fetch");
+		//printf("%s\n", "Instruction Fetch");
 		IF_c += IF(c,pgm_c,Inst_Mem);
-		printInst(IFID.instruction);
-		printBuffer(IFID);
+		//printInst(IFID.instruction);
+		//printBuffer(IFID);
 
 
 
@@ -283,6 +282,7 @@ int main (int argc, char *argv[]){
 				printf("\n");
 		}
 		*/
+		
 		
 
 		//output code 2: the following code will output the register 
@@ -399,6 +399,7 @@ char *progScanner(char *c){
 
 	}
 	*/
+	
 	
 	
 	if(ret[strlen(ret)-1] == ' ')
@@ -645,12 +646,13 @@ struct inst parser(char *input){
 	commandArgs[argumentCount][column] = '\0';
 	argumentCount++;
 	
-	
+	/*
 	int v = 0;
 	for (v = 0; v < argumentCount; v++){
 		printf("TEMPARGS[%s]\n",commandArgs[v]);
 		
 	}
+	*/
 	
 	
 	
@@ -1011,7 +1013,7 @@ int ID(long *registers, struct buffer IfId){
 
 
 		if((IFID.instruction.rs != 0) && ((IFID.instruction.rs == IDEX.instruction.rd) || (IFID.instruction.rs  == EXMEM.instruction.rd) || (IFID.instruction.rs == MEMWB.instruction.rd))){
-			printf("RAW HAZARD, Register:%d\n", IFID.instruction.rs);
+			//printf("RAW HAZARD, Register:%d\n", IFID.instruction.rs);
 			IDEX.instruction.opcode = noop;
 			IDEX.instruction.rd = 0;
 			IDEX.readyToRead = 1;
@@ -1020,7 +1022,7 @@ int ID(long *registers, struct buffer IfId){
 			RAW_HAZARD = 1;
 			return 1;
 		}else if((IFID.instruction.rt != 0) && ((IFID.instruction.rt == IDEX.instruction.rd) || (IFID.instruction.rt  == EXMEM.instruction.rd) || (IFID.instruction.rt == MEMWB.instruction.rd))){
-			printf("RAW HAZARD, Register:%d\n", IFID.instruction.rt);
+			//printf("RAW HAZARD, Register:%d\n", IFID.instruction.rt);
 			IDEX.instruction.opcode = noop;
 			IDEX.instruction.rd = 0;
 			IDEX.readyToRead = 1;
@@ -1044,7 +1046,7 @@ int ID(long *registers, struct buffer IfId){
                 ID_cycle_count++;
 				return 1;//return IfId;
 			case addi: // i type
-				printf("%s\n", "ADDI");
+				//printf("%s\n", "ADDI");
 				IfId.instruction.rd = IfId.instruction.rt;
 				IfId.instruction.rs = registers[IfId.instruction.rs];
 				IfId.instruction.rt = registers[IfId.instruction.rt];
