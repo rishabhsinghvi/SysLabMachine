@@ -243,47 +243,21 @@ int main (int argc, char *argv[]){
 
 
 	while(!HALT_SIMULATION){
-		//printf("\n\n\nPROGRAM COUNT:%d    ##################\n",pgm_c);
 
-		//printf("%s\n", "WB");
-		WB_c += WB(mips_reg, MEMWB);
+		WB_c += WB(mips_reg, MEMWB); // Run write back stage
 
-		//printf("%s\n", "MEM");
 		MEM_c += MEM(m,EXMEM);
-		//printInst(MEMWB.instruction);
-		//printBuffer(MEMWB);
 
-		//printf("%s\n", "Execute");
 		EX_c += EX(n,m,&pgm_c);
-		//printInst(EXMEM.instruction); //printf("DATA: %d\n\n", EXMEM.data);
-		//printBuffer(EXMEM);
 
-		//printf("%s\n", "Instruction Decode");
 		ID_c += ID(mips_reg, IFID);
-		//printInst(IDEX.instruction);
-		//printBuffer(IDEX);
 
-		//printf("%s\n", "Instruction Fetch");
 		IF_c += IF(c,pgm_c,Inst_Mem);
-		//printInst(IFID.instruction);
-		//printBuffer(IFID);
 
-
-
-		if(!RAW_HAZARD){
+		if(!RAW_HAZARD){//only increment the program counter when we don't have a raw hazard 
 			pgm_c++;
 		}
-
-		/*
-		int j;
-		for(j = 0; j < 32; j++){
-			printf("%d ", mips_reg[j]);
-			if((j+1)%4 == 0)
-				printf("\n");
-		}
-		*/
-		
-		
+	
 
 		//output code 2: the following code will output the register 
 	        //value to screen at every cycle and wait for the ENTER key
@@ -304,10 +278,6 @@ int main (int argc, char *argv[]){
 
 
 	}
-
- 
-
-
 
 	IF_c -= c;//remove cycle count for halt sim
 
@@ -342,7 +312,6 @@ int main (int argc, char *argv[]){
 //
 char *progScanner(char *c){
 
-	//char *ret; ret = (char*)calloc(strlen(c)+1, sizeof(char));
 	int len,paren; paren = 0;
 	len = str_len(c) + 1;
 	char *ret; ret = (char*)malloc((len)*sizeof(char));strcpy(ret,"");
@@ -388,21 +357,8 @@ char *progScanner(char *c){
 		exit(0);
 	}
 
-
-	/*
-	for (i = strlen(ret); i >= 0; --i){
-		if(ret[i] >='0' && ret[i] <= '9'){
-			printf("LAST LETTER:%c\n", ret[i]);
-			ret[i+1]='\0';
-			break;
-		}
-
-	}
-	*/
 	
-	
-	
-	if(ret[strlen(ret)-1] == ' ')
+	if(ret[strlen(ret)-1] == ' ') //make sure the last space is not 0
 		ret[strlen(ret)-1] = '\0';
 
 	return ret;
@@ -996,7 +952,8 @@ struct inst parser(char *input){
 
 int IF(int c, int pgm_c, struct inst *instruct){
 
-    if(IFID.readytoWrite && !BRANCH_PENDING){
+	// only fetch instruction if we are ready to write to next register, and there is not a branch pending
+    if(IFID.readytoWrite && !BRANCH_PENDING){ 
         IFID.instruction = instruct[pgm_c];
         IFID.readyToRead = 1;
         IFID.readytoWrite = 0;
@@ -1004,14 +961,14 @@ int IF(int c, int pgm_c, struct inst *instruct){
         return c;
 	}
 
-	return c;
+	return 0;
 }
 
 int ID(long *registers, struct buffer IfId){  
 
 	if(IDEX.readytoWrite && IFID.readyToRead && !BRANCH_PENDING){
 
-
+		//test for raw hazard
 		if((IFID.instruction.rs != 0) && ((IFID.instruction.rs == IDEX.instruction.rd) || (IFID.instruction.rs  == EXMEM.instruction.rd) || (IFID.instruction.rs == MEMWB.instruction.rd))){
 			//printf("RAW HAZARD, Register:%d\n", IFID.instruction.rs);
 			IDEX.instruction.opcode = noop;
@@ -1033,7 +990,7 @@ int ID(long *registers, struct buffer IfId){
 		}
 		RAW_HAZARD = 0;
 		
-		
+		//decode instruction
 		switch(IfId.instruction.opcode){
 			case add: //r type
 				IfId.instruction.rs = registers[IfId.instruction.rs];

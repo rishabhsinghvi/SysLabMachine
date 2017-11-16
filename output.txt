@@ -1,0 +1,3 @@
+program name: branchTest.txt
+stage utilization: 0.230769  0.538462  0.230769  0.000000  0.153846 
+register values 88  88  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  10
