@@ -249,7 +249,7 @@ int main(int argc, char const *argv[])
 	printf("MEM Test: %d\n\n", MEM_Test());
 	printf("WB Test: %d\n\n", WB_Test());
 	printf("Number of Lines Test 1: %d\n\n", numLines_test1());
-	//printf("File Reader Test 1: %d\n\n", fileRead_test1());
+	printf("File Reader Test 1: %d\n\n", fileRead_test1());
 	printf("Program Scanner Test 1: %d\n\n", progScanner_Test1());
 	printf("Program Scanner Test 2: %d\n\n", progScanner_Test2());
 	printf("Program Scanner Test 3: %d\n\n", progScanner_Test3());
