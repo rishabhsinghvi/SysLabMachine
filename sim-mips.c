@@ -36,8 +36,6 @@ struct buffer
 	struct inst instruction;
 	int readyToRead;
 	int readytoWrite;
-	int address;
-	int VALID;
 	int data;
 };
 
@@ -72,27 +70,18 @@ void printBuffer(struct buffer b){
 void initLatches(){
 IFID.readyToRead = 0;
 IFID.readytoWrite = 1;
-IFID.address = -1;
-
-IFID.VALID = 1;
 IFID.data = 0;
 
 IDEX.readyToRead = 0;
 IDEX.readytoWrite = 1;
-IDEX.address = -1;
-IDEX.VALID = 1;
 IDEX.data = 0;
 
 EXMEM.readyToRead = 0;
 EXMEM.readytoWrite = 1;
-EXMEM.address = -1;
-EXMEM.VALID = 1;
 EXMEM.data = 0;
 
 MEMWB.readyToRead = 0;
 MEMWB.readytoWrite = 1;
-MEMWB.address = -1;
-MEMWB.VALID = 1;
 MEMWB.data = 0;
 }
 
@@ -1115,7 +1104,6 @@ int EX(int n, int m, int *p){
 		        return 0;
 	    	case add:
 		        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.rt;
-		        EXMEM.address = -1;  //so you know nothing needs to be written to memory!
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
@@ -1127,7 +1115,6 @@ int EX(int n, int m, int *p){
 	    	case addi:
 		    	//printf("%s   %d     %d\n", "ADDI-EX", IDEX.instruction.rs, IDEX.instruction.Imm);
 		        EXMEM.data = IDEX.instruction.rs+IDEX.instruction.Imm;
-		        EXMEM.address = -1;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
@@ -1137,7 +1124,6 @@ int EX(int n, int m, int *p){
 	        	return n;
 	    	case sub:
 		        EXMEM.data = IDEX.instruction.rs-IDEX.instruction.rt;
-		        EXMEM.address = -1;  //so you know nothing needs to be written to memory!
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
@@ -1150,7 +1136,6 @@ int EX(int n, int m, int *p){
 		        if((IDEX.instruction.rs-IDEX.instruction.rt)==0){
 		            *p=*p+IDEX.instruction.Imm;/////////********************change program counter
 		        }
-		        EXMEM.address = -1;
 		        BRANCH_PENDING = 0;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
@@ -1160,7 +1145,6 @@ int EX(int n, int m, int *p){
                 EX_cycle_count = EX_cycle_count + n;
 		        return n;
 			case lw: 
-		        EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
@@ -1170,7 +1154,6 @@ int EX(int n, int m, int *p){
 		        return n;
 			case sw:
 		        EXMEM.data = IDEX.instruction.rt;
-		        EXMEM.address = IDEX.instruction.rs+IDEX.instruction.Imm;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
@@ -1180,7 +1163,6 @@ int EX(int n, int m, int *p){
 		        return n; 
 	     	case haltSimulation:
 		    	EXMEM.instruction = IDEX.instruction;
-		    	EXMEM.address = -1;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 0;
@@ -1191,7 +1173,6 @@ int EX(int n, int m, int *p){
 	            result = IDEX.instruction.rs*IDEX.instruction.rt;
 	            result = result&0x0000ffff; //making sure the result if only the low reg
 	            EXMEM.data = result;
-		        EXMEM.address = -1;
 		        EXMEM.readyToRead = 1;
 		        EXMEM.readytoWrite = 0;
 		        IDEX.readytoWrite = 1;
